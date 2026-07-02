@@ -28,7 +28,7 @@ class QAService:
 
         # Resolve key and model name
         self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.groq_api_key
-        self.model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
+        self.model_name = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
         
         from src.ai.utils import get_groq_client
         self.client = get_groq_client()
