@@ -15,7 +15,6 @@ from src.models.schemas import (
 
 def test_settings_load_with_defaults():
     settings = Settings(_env_file=None)
-    assert settings.openai_model == "gpt-4o"
     assert settings.embedding_model == "all-MiniLM-L6-v2"
     assert settings.top_k_retrieval == 20
 

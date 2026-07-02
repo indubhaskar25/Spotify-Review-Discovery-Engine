@@ -30,6 +30,10 @@ class EmbeddingService:
     - On-disk numpy cache so unchanged datasets are never re-encoded.
     """
 
+    # Class-level cache to ensure only one instance of the embedding model exists
+    _shared_model = None
+    _shared_model_name = None
+
     def __init__(
         self,
         settings: Settings | None = None,
@@ -49,12 +53,16 @@ class EmbeddingService:
 
     def _load_model(self) -> None:
         """Load the sentence-transformers model on first use."""
-        if self._model is None:
+        if self._model is not None:
+            return
+        if EmbeddingService._shared_model is None or EmbeddingService._shared_model_name != self.model_name:
             from sentence_transformers import SentenceTransformer  # noqa: PLC0415
 
             logger.info("Loading embedding model: %s", self.model_name)
-            self._model = SentenceTransformer(self.model_name)
+            EmbeddingService._shared_model = SentenceTransformer(self.model_name)
+            EmbeddingService._shared_model_name = self.model_name
             logger.info("Embedding model loaded.")
+        self._model = EmbeddingService._shared_model
 
     # ------------------------------------------------------------------
     # Core encoding

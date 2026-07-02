@@ -94,13 +94,24 @@ def on_startup() -> None:
             )
             print(f"  Successfully ingested {len(ingest_res.records)} records.")
             
+            # Explicitly free memory after ingestion
+            del ingest_res
+            import gc
+            gc.collect()
+            
             print(f"[Startup] Encoding and indexing collection: '{ds_id}' in ChromaDB...")
             run_embed_pipeline(ds_id)
+            
+            # Explicitly collect garbage after embedding pipeline
+            gc.collect()
             
             print(f"[Startup] Pre-computing and caching analytical insights for dataset: '{ds_id}'...")
             # Trigger insight generation report caching
             get_insights(ds_id, force_refresh=True)
             print(f"  Cached insights for '{ds_id}' successfully.")
+            
+            # Explicitly collect garbage after analytical insights generation
+            gc.collect()
             
         print("[Startup] Automatic database initialization completed successfully!\n")
         
@@ -236,7 +247,11 @@ def get_insights(dataset_id: str, force_refresh: bool = False) -> dict[str, Any]
     # Return cached version unless force_refresh is requested
     if not force_refresh and insight_cache.exists(dataset_id):
         report = insight_cache.load(dataset_id)
-        return report.model_dump(mode="json")
+        data = report.model_dump(mode="json")
+        del report
+        import gc
+        gc.collect()
+        return data
 
     # Compute fresh
     try:
@@ -248,7 +263,16 @@ def get_insights(dataset_id: str, force_refresh: bool = False) -> dict[str, Any]
         generator = InsightGenerator(settings)
         report = generator.generate_report(dataset_id, records)
         insight_cache.save(report)
-        return report.model_dump(mode="json")
+        data = report.model_dump(mode="json")
+        
+        # Explicitly free memory
+        del generator
+        del report
+        del records
+        import gc
+        gc.collect()
+        
+        return data
     except Exception as exc:
         logger.error("Insight generation failed: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc

@@ -63,6 +63,11 @@ class RawStore:
         records: list[ReviewRecord] = []
         for row in df.to_dict(orient="records"):
             records.append(ReviewRecord.model_validate(row))
+        
+        del df
+        import gc
+        gc.collect()
+        
         return records
 
     def load_metadata(self, dataset_id: str) -> dict:

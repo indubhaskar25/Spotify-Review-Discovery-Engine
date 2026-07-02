@@ -88,6 +88,7 @@ def run_embed_pipeline(dataset_id: str) -> None:
     # ------------------------------------------------------------------
     # 3. Upsert into ChromaDB
     # ------------------------------------------------------------------
+    # 3. Upsert into ChromaDB
     embeddings_list: list[list[float]] = embeddings_np.tolist()
 
     logger.info(
@@ -103,6 +104,14 @@ def run_embed_pipeline(dataset_id: str) -> None:
         total_in_collection,
         dataset_id,
     )
+
+    # Explicitly free memory after embedding pipeline completes
+    del records
+    del texts
+    del embeddings_np
+    del embeddings_list
+    import gc
+    gc.collect()
 
 
 # ------------------------------------------------------------------
