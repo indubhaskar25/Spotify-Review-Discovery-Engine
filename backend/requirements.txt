@@ -3,9 +3,9 @@ fastapi==0.115.14
 uvicorn[standard]==0.32.1
 
 # ── Data validation & settings ────────────────────────────────────────────────
-pydantic==2.10.6
-pydantic-core==2.27.2
-pydantic-settings==2.7.1
+pydantic==2.13.4
+pydantic-core==2.46.4
+pydantic-settings==2.10.1
 python-dotenv==1.0.1
 
 # ── Vector database ───────────────────────────────────────────────────────────
