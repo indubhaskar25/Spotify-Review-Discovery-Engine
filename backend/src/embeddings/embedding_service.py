@@ -56,9 +56,16 @@ class EmbeddingService:
         if self._model is not None:
             return
         if EmbeddingService._shared_model is None or EmbeddingService._shared_model_name != self.model_name:
+            import os
+            # Set Hugging Face cache path to be inside the persistent data directory
+            hf_cache_dir = self.settings.data_path / "huggingface"
+            hf_cache_dir.mkdir(parents=True, exist_ok=True)
+            os.environ["HF_HOME"] = str(hf_cache_dir)
+            os.environ["SENTENCE_TRANSFORMERS_HOME"] = str(hf_cache_dir)
+
             from sentence_transformers import SentenceTransformer  # noqa: PLC0415
 
-            logger.info("Loading embedding model: %s", self.model_name)
+            logger.info("Loading embedding model: %s (cache_dir: %s)", self.model_name, hf_cache_dir)
             EmbeddingService._shared_model = SentenceTransformer(self.model_name)
             EmbeddingService._shared_model_name = self.model_name
             logger.info("Embedding model loaded.")

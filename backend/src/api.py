@@ -42,24 +42,15 @@ app = FastAPI(
 )
 
 
-@app.on_event("startup")
-def on_startup() -> None:
-    """Run automatic database initialization check and seed dataset reports if empty."""
+import threading
+
+def _run_initialization_in_background(settings) -> None:
+    """Heavy DB initialization executed in a background thread to prevent startup timeout."""
     from src.storage.vector_store import VectorStoreManager
     from src.pipeline.ingest_pipeline import IngestionService
     from src.pipeline.embed_pipeline import run_embed_pipeline
-    from src.ai.utils import get_groq_client
-    
-    settings = get_settings()
-    
-    # Initialize the Groq client during startup and log success/failure
-    print("[Startup] Initializing Groq client...")
-    client = get_groq_client()
-    if client:
-        print("[Startup] Groq client initialized successfully.")
-    else:
-        print("[Startup] WARNING: GROQ_API_KEY is not configured or initialization failed.")
-        
+    import gc
+
     try:
         # Ensure directories exist
         settings.ensure_data_dirs()
@@ -70,16 +61,15 @@ def on_startup() -> None:
         
         # If collections exist and have documents, skip initialization
         if len(collections) > 0 and total_docs > 0:
-            print("[Startup] Existing vector database found. Initialization skipped.")
-            print("=== ChromaDB Startup Collection Scan ===")
+            print("[Background Init] Existing vector database found. Initialization skipped.")
+            print("=== ChromaDB Collection Scan ===")
             for col in collections:
                 print(f"Collection: '{col.name}' | Loaded Documents: {col.count()}")
-            print("========================================\n")
+            print("================================\n")
             return
             
-        print("[Startup] ChromaDB is empty or does not exist. Triggering automatic database initialization...")
+        print("[Background Init] ChromaDB is empty/missing. Running database initialization...")
         
-        # Seeding targets
         seeding_targets = [
             {"source": "app_store", "dataset_id": "app_store_20260630_110857_4c70802c", "file_path": "data/sample/app_store_sample.csv"},
             {"source": "play_store", "dataset_id": "play_store_20260630_110855_5d8e1ddd", "file_path": "data/sample/play_store_sample.csv"},
@@ -94,7 +84,7 @@ def on_startup() -> None:
             ds_id = target["dataset_id"]
             file_path = target["file_path"]
             
-            print(f"[Startup] Ingesting reviews for source: '{source}' -> dataset_id: '{ds_id}'...")
+            print(f"[Background Init] Ingesting reviews for source: '{source}' -> dataset_id: '{ds_id}'...")
             ingest_res = ingest_svc.ingest(
                 source=source,
                 file_path=file_path,
@@ -104,31 +94,43 @@ def on_startup() -> None:
             )
             print(f"  Successfully ingested {len(ingest_res.records)} records.")
             
-            # Explicitly free memory after ingestion
             del ingest_res
-            import gc
             gc.collect()
             
-            print(f"[Startup] Encoding and indexing collection: '{ds_id}' in ChromaDB...")
+            print(f"[Background Init] Encoding and indexing collection: '{ds_id}' in ChromaDB...")
             run_embed_pipeline(ds_id)
-            
-            # Explicitly collect garbage after embedding pipeline
             gc.collect()
             
-            print(f"[Startup] Pre-computing and caching analytical insights for dataset: '{ds_id}'...")
-            # Trigger insight generation report caching
+            print(f"[Background Init] Pre-computing and caching analytical insights for dataset: '{ds_id}'...")
             get_insights(ds_id, force_refresh=True)
             print(f"  Cached insights for '{ds_id}' successfully.")
-            
-            # Explicitly collect garbage after analytical insights generation
             gc.collect()
             
-        print("[Startup] Automatic database initialization completed successfully!\n")
+        print("[Background Init] Database initialization completed successfully!\n")
         
     except Exception as exc:
-        print(f"\n❌ [Startup] Critical database initialization failed: {exc}")
-        # Abort startup by raising a RuntimeError
-        raise RuntimeError("Database initialization failed. Server startup aborted.") from exc
+        print(f"\n❌ [Background Init] Database initialization failed: {exc}")
+
+
+@app.on_event("startup")
+def on_startup() -> None:
+    """FastAPI startup handler — starts database initialization in the background."""
+    from src.ai.utils import get_groq_client
+    
+    settings = get_settings()
+    
+    # 1. Initialize the Groq client during startup and log success/failure
+    print("[Startup] Initializing Groq client...")
+    client = get_groq_client()
+    if client:
+        print("[Startup] Groq client initialized successfully.")
+    else:
+        print("[Startup] WARNING: GROQ_API_KEY is not configured or initialization failed.")
+
+    # 2. Spawning heavy database initialization in a background thread to prevent start timeout
+    print("[Startup] Spawning database initialization task in the background...")
+    threading.Thread(target=_run_initialization_in_background, args=(settings,), daemon=True).start()
+    print("[Startup] Server started and listening. Initialization is running in the background.")
 
 # ──────────────────────────────────────────────
 # CORS — allow Vercel-deployed Next.js frontend
