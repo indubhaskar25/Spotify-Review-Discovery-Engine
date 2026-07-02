@@ -1,0 +1,35 @@
+[
+  {
+    "id": "reddit_001",
+    "title": "Why does Discover Weekly feel stale?",
+    "body": "I listen to jazz and metal but keep getting the same pop artists every week.",
+    "author": "indie_explorer",
+    "created_utc": "2025-03-01T10:15:00+00:00",
+    "url": "https://reddit.com/r/spotify/comments/example1",
+    "subreddit": "spotify",
+    "score": 128,
+    "num_comments": 42
+  },
+  {
+    "id": "reddit_002",
+    "title": "Autoplay keeps repeating skipped tracks",
+    "body": "After an album ends Spotify replays songs I already skipped earlier today.",
+    "author": "passive_fan",
+    "created_utc": "2025-03-02T14:00:00+00:00",
+    "url": "https://reddit.com/r/truespotify/comments/example2",
+    "subreddit": "truespotify",
+    "score": 89,
+    "num_comments": 17
+  },
+  {
+    "id": "reddit_003",
+    "title": "Best way to break out of recommendation bubbles?",
+    "body": "Looking for workflows to discover underground artists without manual playlist digging.",
+    "author": "active_listener",
+    "created_utc": "2025-03-03T09:30:00+00:00",
+    "url": "https://reddit.com/r/music/comments/example3",
+    "subreddit": "music",
+    "score": 215,
+    "num_comments": 63
+  }
+]

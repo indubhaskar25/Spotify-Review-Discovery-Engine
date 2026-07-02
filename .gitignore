@@ -1,0 +1,46 @@
+# Environment variables
+.env
+backend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Python virtual environments and caches
+.venv/
+venv/
+backend/.venv/
+backend/venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Next.js build and dependencies
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/tsconfig.tsbuildinfo
+node_modules/
+
+# Local databases and analytical caches
+backend/data/processed/
+backend/data/chroma/
+backend/data/embeddings/
+backend/data/insights/
+data/processed/
+data/chroma/
+data/embeddings/
+data/insights/
+
+# System and editor directories
+.DS_Store
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/

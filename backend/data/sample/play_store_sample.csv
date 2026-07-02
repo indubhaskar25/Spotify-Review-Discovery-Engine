@@ -1,0 +1,81 @@
+review_id,rating,review_text,author,review_date,platform,app_version
+ps_0001,5,Best music app ever. Discover Weekly introduced me to so many new artists.,djhope_1,2025-01-04,android,8.9.0
+ps_0002,4,Great app but shuffle could be smarter. I hear repeats too often.,djhope_2,2025-01-07,android,8.8.72
+ps_0003,2,Discover Weekly is stale. Same artists every week despite listening to new genres.,listener42_3,2025-01-10,android,8.9.0
+ps_0004,1,Recommendations are terrible. I only get mainstream pop when I listen to jazz.,djhope_4,2025-01-13,android,8.7.10
+ps_0005,3,Decent for playlists but search for new music is confusing.,musicfan_5,2025-01-16,android,8.9.0
+ps_0006,5,Love the personalized playlists. Release Radar never misses.,listener42_6,2025-01-19,android,8.9.0
+ps_0007,2,Autoplay keeps playing songs I already skipped. Very frustrating.,playlistking_7,2025-01-22,android,8.7.10
+ps_0008,4,Daily Mix is perfect for background listening at work.,listener42_8,2025-01-25,ios,8.9.12
+ps_0009,1,Can't find smaller artists. Search results are always the same big names.,indiehead_9,2025-01-28,android,8.8.72
+ps_0010,3,Radio stations repeat the same 20 songs. Need more variety.,djhope_10,2025-01-31,ios,8.9.12
+ps_0011,5,Spotify Wrapped and discovery features keep me engaged all year.,spotifyuser_11,2025-02-03,android,8.8.72
+ps_0012,2,Made for You section feels generic. Doesn't match my mood.,indiehead_12,2025-02-06,android,8.9.0
+ps_0013,4,Blend playlists with friends helped me discover new music.,musicfan_13,2025-02-09,ios,8.9.0
+ps_0014,1,Shuffle on my liked songs plays the same tracks repeatedly.,spotifyuser_14,2025-02-12,android,8.9.12
+ps_0015,3,Good app but the algorithm pushes whatever is trending.,indiehead_15,2025-02-15,android,8.7.10
+ps_0016,5,Song radio feature is amazing for finding similar tracks.,playlistking_16,2025-02-18,android,8.7.10
+ps_0017,2,Discover Weekly hasn't changed in months. Feels broken.,musicfan_17,2025-02-21,android,8.9.12
+ps_0018,4,Podcast discovery is great but music recommendations lag behind.,playlistking_18,2025-02-24,android,8.9.0
+ps_0019,1,I want to explore indie artists but Spotify keeps recommending Drake.,musicfan_19,2025-02-27,android,8.9.12
+ps_0020,3,Offline mode works well but discovery features need wifi.,musicfan_20,2025-03-02,android,8.9.0
+ps_0021,5,Fresh Finds playlist is underrated. Always something new.,audiophile_21,2025-03-05,android,8.7.10
+ps_0022,2,Repeat listening habits trapped me in a bubble. Hard to break out.,djhope_22,2025-03-08,android,8.8.72
+ps_0023,4,Following friends' activity helps me find new songs.,spotifyuser_23,2025-03-11,android,8.8.72
+ps_0024,1,Recommendation algorithm ignores my dislikes and skips.,djhope_24,2025-03-14,android,8.9.0
+ps_0025,3,Search filters could be better for finding songs by mood.,playlistking_25,2025-03-17,android,8.8.72
+ps_0026,5,Love how Release Radar surfaces new tracks from artists I follow.,listener42_26,2025-03-20,ios,8.7.10
+ps_0027,2,Daily Drive repeats songs from yesterday's commute.,spotifyuser_27,2025-03-23,android,8.9.12
+ps_0028,4,Genre radios are hit or miss but mostly good.,indiehead_28,2025-03-26,android,8.8.72
+ps_0029,1,Spotify keeps suggesting artists I explicitly blocked.,indiehead_29,2025-03-29,android,8.9.12
+ps_0030,3,Discovery mode on autoplay would be a welcome feature.,audiophile_30,2025-04-01,android,8.9.0
+ps_0031,5,Excellent for playlist curation and sharing with friends.,listener42_31,2025-04-04,android,8.8.72
+ps_0032,2,Home feed is cluttered. Hard to find discovery playlists.,djhope_32,2025-04-07,ios,8.7.10
+ps_0033,4,Time Capsule and On Repeat features are nostalgic and fun.,djhope_33,2025-04-10,ios,8.8.72
+ps_0034,1,Can't discover local artists from my city. Search is global only.,spotifyuser_34,2025-04-13,android,8.8.72
+ps_0035,3,Smart Shuffle is an improvement but still repeats too much.,djhope_35,2025-04-16,android,8.7.10
+ps_0036,5,Audiobook integration doesn't affect my music taste well.,playlistking_36,2025-04-19,ios,8.9.12
+ps_0037,2,Recommended songs in playlists don't match the playlist vibe.,listener42_37,2025-04-22,android,8.7.10
+ps_0038,4,Using Spotify Connect across devices is seamless.,musicfan_38,2025-04-25,android,8.9.0
+ps_0039,1,Algorithm thinks I only like one genre because of one playlist.,listener42_39,2025-04-28,android,8.7.10
+ps_0040,3,Would love better filters for discovery by decade or region.,playlistking_40,2025-05-01,android,8.7.10
+ps_0041,5,Collaborative playlists changed how our friend group finds music.,audiophile_41,2025-05-04,ios,8.9.12
+ps_0042,2,Discover tab feels like an ad for premium artists.,playlistking_42,2025-05-07,android,8.9.0
+ps_0043,4,Sound quality is great. Wish discovery matched that quality.,djhope_43,2025-05-10,android,8.9.12
+ps_0044,1,Frustrated that my Discover Weekly ignores classical music entirely.,musicfan_44,2025-05-13,android,8.7.10
+ps_0045,3,Passive listening mode makes me hear the same safe choices.,listener42_45,2025-05-16,ios,8.9.0
+ps_0046,5,DJ feature is innovative for passive discovery sessions.,djhope_46,2025-05-19,android,8.8.72
+ps_0047,2,Search doesn't understand typos or alternate spellings well.,playlistking_47,2025-05-22,android,8.9.12
+ps_0048,4,Following curated playlists by Spotify editors is reliable.,indiehead_48,2025-05-25,android,8.8.72
+ps_0049,1,Recommendations feel pay-to-play for major label artists.,spotifyuser_49,2025-05-28,android,8.9.0
+ps_0050,3,Mood-based playlists exist but aren't personalized enough.,playlistking_50,2025-05-31,android,8.7.10
+ps_0051,5,Great for rediscovering old favorites through On Repeat.,musicfan_51,2025-06-03,android,8.9.12
+ps_0052,2,New music Friday doesn't reflect my taste at all.,indiehead_52,2025-06-06,android,8.8.72
+ps_0053,4,Car mode simplifies discovery while driving safely.,musicfan_53,2025-06-09,android,8.9.0
+ps_0054,1,I listen to K-pop but get recommended only Western pop.,musicfan_54,2025-06-12,ios,8.9.0
+ps_0055,3,Explore tab was better before the redesign.,indiehead_55,2025-06-15,android,8.8.72
+ps_0056,5,Blend with partner introduced us to shared favorites.,djhope_56,2025-06-18,ios,8.8.72
+ps_0057,2,Autoplay after album ends plays unrelated trending songs.,spotifyuser_57,2025-06-21,ios,8.8.72
+ps_0058,4,Liked songs shuffle could respect recently played history.,playlistking_58,2025-06-24,android,8.9.12
+ps_0059,1,Discovery stuck in a loop. Same 50 songs for months.,audiophile_59,2025-06-27,android,8.7.10
+ps_0060,3,Artist radio sometimes includes random unrelated tracks.,playlistking_60,2025-06-30,ios,8.9.0
+ps_0061,5,Premium worth it for ad-free uninterrupted discovery.,listener42_61,2025-07-03,android,8.9.0
+ps_0062,2,Home page prioritizes podcasts over music I want to explore.,spotifyuser_62,2025-07-06,android,8.8.72
+ps_0063,4,Greenroom and live sessions helped find emerging artists.,playlistking_63,2025-07-09,android,8.9.0
+ps_0064,1,Can't filter recommendations by language preference easily.,musicfan_64,2025-07-12,android,8.8.72
+ps_0065,3,Weekly discovery stats would motivate exploring more genres.,musicfan_65,2025-07-15,android,8.9.12
+ps_0066,5,Song credits and liner notes would enhance discovery.,musicfan_66,2025-07-18,android,8.9.12
+ps_0067,2,Made for You mixes feel copy-pasted between users.,djhope_67,2025-07-21,ios,8.8.72
+ps_0068,4,Integrations with Last.fm would improve recommendations.,playlistking_68,2025-07-24,android,8.7.10
+ps_0069,1,Spotify Wrapped hype but rest of year discovery is poor.,listener42_69,2025-07-27,ios,8.7.10
+ps_0070,3,Radio from song works but from playlist doesn't.,listener42_70,2025-07-30,android,8.9.0
+ps_0071,5,Clean UI makes browsing new releases enjoyable.,djhope_71,2025-08-02,ios,8.9.12
+ps_0072,2,Explicit content filter hides artists I want to discover.,audiophile_72,2025-08-05,ios,8.7.10
+ps_0073,4,Sleep timer and mood timers help passive listening.,indiehead_73,2025-08-08,android,8.9.0
+ps_0074,1,Recommendations ignore my listening on other devices.,musicfan_74,2025-08-11,ios,8.9.12
+ps_0075,3,Community playlists would improve grassroots discovery.,indiehead_75,2025-08-14,android,8.8.72
+ps_0076,5,Crossfade and gapless playback enhance playlist exploration.,listener42_76,2025-08-17,android,8.7.10
+ps_0077,2,Discover Weekly removed artists I had just started liking.,listener42_77,2025-08-20,ios,8.8.72
+ps_0078,4,Year-end recap is fun but mid-year discovery lacks tools.,spotifyuser_78,2025-08-23,ios,8.8.72
+ps_0079,1,Search by lyrics sometimes fails for niche songs.,indiehead_79,2025-08-26,android,8.7.10
+ps_0080,3,Better onboarding quiz would improve initial recommendations.,indiehead_80,2025-08-29,android,8.9.0
