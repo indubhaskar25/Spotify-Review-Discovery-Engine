@@ -7,7 +7,7 @@ services:
     startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.11
       - key: CHROMA_PERSIST_DIR
         value: /data/chroma
       - key: DATA_DIR

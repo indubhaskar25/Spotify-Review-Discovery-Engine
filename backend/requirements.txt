@@ -1,17 +1,33 @@
-streamlit==1.39.0
-openai==1.54.4
-langchain==0.3.7
-langchain-openai==0.2.8
-langchain-community==0.3.7
-chromadb==0.5.18
-sentence-transformers==3.3.1
-pandas==2.2.3
-pyarrow==18.0.0
-pydantic==2.9.2
-pydantic-settings==2.6.1
+# ── Web framework ─────────────────────────────────────────────────────────────
+fastapi==0.115.14
+uvicorn[standard]==0.32.1
+
+# ── Data validation & settings ────────────────────────────────────────────────
+pydantic==2.10.6
+pydantic-core==2.27.2
+pydantic-settings==2.7.1
 python-dotenv==1.0.1
-plotly==5.24.1
+
+# ── Vector database ───────────────────────────────────────────────────────────
+chromadb==0.5.23
+
+# ── Embeddings ────────────────────────────────────────────────────────────────
+sentence-transformers==3.3.1
+
+# ── LLM / AI ──────────────────────────────────────────────────────────────────
+groq==0.13.1
+
+# ── LangChain (retrieval abstractions only) ───────────────────────────────────
+langchain-core==0.3.29
+
+# ── Data processing ───────────────────────────────────────────────────────────
+pandas==2.2.3
+numpy>=1.26.0,<2.0.0
+tqdm==4.67.1
+
+# ── Ingestion sources ─────────────────────────────────────────────────────────
 praw==7.8.1
-fpdf2==2.8.2
-pytest==8.3.3
 google-play-scraper==1.2.7
+
+# ── Testing ───────────────────────────────────────────────────────────────────
+pytest==8.3.3
