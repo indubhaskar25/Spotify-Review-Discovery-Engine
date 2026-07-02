@@ -1,8 +1,8 @@
 services:
   - type: web
     name: spotify-review-backend
-    env: python
-    rootDirectory: backend
+    runtime: python
+    rootDir: backend
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
     envVars:
