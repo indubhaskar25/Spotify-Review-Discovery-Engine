@@ -26,24 +26,12 @@ class QAService:
         self.settings = settings or get_settings()
         self.retrieval_service = RetrievalService(self.settings)
 
-        # Resolve key: env var takes precedence, settings.groq_api_key is the .env fallback.
+        # Resolve key and model name
         self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.groq_api_key
-
         self.model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
-        self.client = None
-
-        if not self.api_key:
-            logger.warning(
-                "GROQ_API_KEY is not set in environment or .env file. "
-                "Ask AI will return a placeholder response."
-            )
-        else:
-            logger.info("GROQ_API_KEY found (length=%d), initializing Groq client...", len(self.api_key))
-            try:
-                self.client = Groq(api_key=self.api_key)
-                logger.info("Groq client initialized successfully (model=%s)", self.model_name)
-            except Exception:
-                logger.exception("Failed to initialize Groq client")
+        
+        from src.ai.utils import get_groq_client
+        self.client = get_groq_client()
 
     def ask(
         self,
@@ -144,9 +132,9 @@ class QAService:
                 temperature=0.1,  # low temp for grounded Q&A
             )
             answer = chat_completion.choices[0].message.content.strip()
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.error("Groq Q&A invocation failed: %s", exc)
-            answer = self.get_mock_qa_response(question)
+            raise exc
 
         return QAResponse(
             question=question,

@@ -48,8 +48,18 @@ def on_startup() -> None:
     from src.storage.vector_store import VectorStoreManager
     from src.pipeline.ingest_pipeline import IngestionService
     from src.pipeline.embed_pipeline import run_embed_pipeline
+    from src.ai.utils import get_groq_client
     
     settings = get_settings()
+    
+    # Initialize the Groq client during startup and log success/failure
+    print("[Startup] Initializing Groq client...")
+    client = get_groq_client()
+    if client:
+        print("[Startup] Groq client initialized successfully.")
+    else:
+        print("[Startup] WARNING: GROQ_API_KEY is not configured or initialization failed.")
+        
     try:
         # Ensure directories exist
         settings.ensure_data_dirs()

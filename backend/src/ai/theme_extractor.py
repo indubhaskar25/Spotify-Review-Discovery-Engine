@@ -30,9 +30,8 @@ class ThemeExtractor:
         self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.groq_api_key
         self.model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-        self.client = None
-        if self.api_key:
-            self.client = Groq(api_key=self.api_key)
+        from src.ai.utils import get_groq_client
+        self.client = get_groq_client()
 
     def extract_themes(
         self,
