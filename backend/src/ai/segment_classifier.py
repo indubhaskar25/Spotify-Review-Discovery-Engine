@@ -56,7 +56,9 @@ class SegmentClassifier:
             prompt = f"Please classify the following batch of reviews:\n{json.dumps(inputs, indent=2)}"
 
             try:
-                chat_completion = self.client.chat.completions.create(
+                from src.ai.utils import call_groq_with_retry
+                chat_completion = call_groq_with_retry(
+                    self.client,
                     messages=[
                         {"role": "system", "content": SEGMENT_SYSTEM_PROMPT},
                         {"role": "user", "content": prompt},

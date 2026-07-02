@@ -66,7 +66,9 @@ class SentimentAnalyzer:
             )
 
             try:
-                chat_completion = self.client.chat.completions.create(
+                from src.ai.utils import call_groq_with_retry
+                chat_completion = call_groq_with_retry(
+                    self.client,
                     messages=[
                         {"role": "user", "content": prompt},
                     ],

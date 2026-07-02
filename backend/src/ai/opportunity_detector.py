@@ -45,50 +45,7 @@ class OpportunityDetector:
 
         if not self.client:
             logger.warning("Groq client not configured — returning mock product opportunities for hackathon workflow demo.")
-            return [
-                Insight(
-                    theme="AI Discovery Assistant",
-                    frequency=58,
-                    representative_quotes=[
-                        "I wish I could type a vibe like 'obscure 80s synth wave for rainy day' and get a playlist.",
-                        "Regular search is useless for vibes."
-                    ],
-                    business_impact="Direct lift in WAU and discovery satisfaction, decreasing playlist curation time.",
-                    product_opportunity="An interactive natural language assistant to generate playlists matching specific contexts or obscure sub-genres.",
-                    sources=["reddit", "forum"],
-                    segment=UserSegment.ACTIVE_EXPLORERS,
-                    confidence="94%",
-                    expected_business_value="Boost average weekly session duration by 12% and reduce monthly subscription churn by 1.8%."
-                ),
-                Insight(
-                    theme="Dynamic Mood Adaptive Filters",
-                    frequency=40,
-                    representative_quotes=[
-                        "My workouts need high tempo but my playlist has slow songs. Smart shuffle fails here.",
-                        "Hard to filter playlists by speed."
-                    ],
-                    business_impact="Drive premium upgrades and increase cross-device wearable session continuity.",
-                    product_opportunity="Multi-select activity filters (e.g. gym, sleep, focus) that overlay on top of any custom playlist.",
-                    sources=["play_store", "app_store"],
-                    segment=UserSegment.MOOD_BASED_LISTENERS,
-                    confidence="87%",
-                    expected_business_value="Higher premium retention among active lifestyle segments and 8% lift in workout stream length."
-                ),
-                Insight(
-                    theme="Algorithmic Loop Breaker",
-                    frequency=35,
-                    representative_quotes=[
-                        "Give me a button to clear recent recommendation history. It's stuck.",
-                        "I want to hear completely new music today."
-                    ],
-                    business_impact="Eliminate user frustration about repetitive recommendations and increase stream diversity.",
-                    product_opportunity="One-click toggle in Settings to clear short-term profile vectors or shift into a high-entropy 'Discovery Mode'.",
-                    sources=["play_store", "reddit"],
-                    segment=UserSegment.PLAYLIST_LOYALISTS,
-                    confidence="90%",
-                    expected_business_value="Improves overall Net Promoter Score (NPS) by 5 points and reduces discovery complaints."
-                )
-            ]
+            return self._get_mock_opportunities()
 
 
         # Focus on negative reviews to find unmet opportunities (rating <= 3 or Reddit/Forum comments)
@@ -124,8 +81,9 @@ class OpportunityDetector:
         )
 
         try:
-            logger.info("Calling Groq to detect product opportunities")
-            chat_completion = self.client.chat.completions.create(
+            from src.ai.utils import call_groq_with_retry
+            chat_completion = call_groq_with_retry(
+                self.client,
                 messages=[
                     {"role": "system", "content": OPPORTUNITY_SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},
@@ -149,10 +107,14 @@ class OpportunityDetector:
                             segment_val = seg
                             break
 
+                quotes = item.get("representative_quotes", [])
+                if not quotes or not isinstance(quotes, list):
+                    quotes = ["No quotes available"]
+
                 insight = Insight(
                     theme=item.get("theme", "New Opportunity Area"),
                     frequency=item.get("frequency", 10),
-                    representative_quotes=item.get("representative_quotes", ["No quotes available"]),
+                    representative_quotes=quotes,
                     business_impact=item.get("business_impact", "Retention and LTV lift"),
                     product_opportunity=item.get("product_opportunity", "New feature description"),
                     sources=item.get("sources", []),
@@ -165,5 +127,51 @@ class OpportunityDetector:
             return insights
 
         except Exception as exc:  # noqa: BLE001
-            logger.error("Failed to detect opportunities: %s", exc)
-            return []
+            logger.error("Failed to detect opportunities: %s. Falling back to mock opportunities.", exc)
+            return self._get_mock_opportunities()
+
+    def _get_mock_opportunities(self) -> list[Insight]:
+        return [
+            Insight(
+                theme="AI Discovery Assistant",
+                frequency=58,
+                representative_quotes=[
+                    "I wish I could type a vibe like 'obscure 80s synth wave for rainy day' and get a playlist.",
+                    "Regular search is useless for vibes."
+                ],
+                business_impact="Direct lift in WAU and discovery satisfaction, decreasing playlist curation time.",
+                product_opportunity="An interactive natural language assistant to generate playlists matching specific contexts or obscure sub-genres.",
+                sources=["reddit", "forum"],
+                segment=UserSegment.ACTIVE_EXPLORERS,
+                confidence="94%",
+                expected_business_value="Boost average weekly session duration by 12% and reduce monthly subscription churn by 1.8%."
+            ),
+            Insight(
+                theme="Dynamic Mood Adaptive Filters",
+                frequency=40,
+                representative_quotes=[
+                    "My workouts need high tempo but my playlist has slow songs. Smart shuffle fails here.",
+                    "Hard to filter playlists by speed."
+                ],
+                business_impact="Drive premium upgrades and increase cross-device wearable session continuity.",
+                product_opportunity="Multi-select activity filters (e.g. gym, sleep, focus) that overlay on top of any custom playlist.",
+                sources=["play_store", "app_store"],
+                segment=UserSegment.MOOD_BASED_LISTENERS,
+                confidence="87%",
+                expected_business_value="Higher premium retention among active lifestyle segments and 8% lift in workout stream length."
+            ),
+            Insight(
+                theme="Algorithmic Loop Breaker",
+                frequency=35,
+                representative_quotes=[
+                    "Give me a button to clear recent recommendation history. It's stuck.",
+                    "I want to hear completely new music today."
+                ],
+                business_impact="Eliminate user frustration about repetitive recommendations and increase stream diversity.",
+                product_opportunity="One-click toggle in Settings to clear short-term profile vectors or shift into a high-entropy 'Discovery Mode'.",
+                sources=["play_store", "reddit"],
+                segment=UserSegment.PLAYLIST_LOYALISTS,
+                confidence="90%",
+                expected_business_value="Improves overall Net Promoter Score (NPS) by 5 points and reduces discovery complaints."
+            )
+        ]

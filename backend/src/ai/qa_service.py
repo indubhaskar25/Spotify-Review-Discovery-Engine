@@ -136,8 +136,9 @@ class QAService:
         user_content = QA_USER_PROMPT.format(question=question)
 
         try:
-            logger.info("Calling Groq model=%s for question=%r", self.model_name, question)
-            chat_completion = self.client.chat.completions.create(
+            from src.ai.utils import call_groq_with_retry
+            chat_completion = call_groq_with_retry(
+                self.client,
                 messages=[
                     {"role": "system", "content": system_content},
                     {"role": "user", "content": user_content},

@@ -44,18 +44,70 @@ app = FastAPI(
 
 @app.on_event("startup")
 def on_startup() -> None:
-    """Print the number of documents loaded into each collection during startup."""
+    """Run automatic database initialization check and seed dataset reports if empty."""
     from src.storage.vector_store import VectorStoreManager
+    from src.pipeline.ingest_pipeline import IngestionService
+    from src.pipeline.embed_pipeline import run_embed_pipeline
+    
+    settings = get_settings()
     try:
-        settings = get_settings()
+        # Ensure directories exist
+        settings.ensure_data_dirs()
+        
         vsm = VectorStoreManager(settings)
         collections = vsm._client.list_collections()
-        print("\n=== ChromaDB Startup Collection Scan ===")
-        for col in collections:
-            print(f"Collection: '{col.name}' | Loaded Documents: {col.count()}")
-        print("========================================\n")
+        total_docs = sum(col.count() for col in collections)
+        
+        # If collections exist and have documents, skip initialization
+        if len(collections) > 0 and total_docs > 0:
+            print("[Startup] Existing vector database found. Initialization skipped.")
+            print("=== ChromaDB Startup Collection Scan ===")
+            for col in collections:
+                print(f"Collection: '{col.name}' | Loaded Documents: {col.count()}")
+            print("========================================\n")
+            return
+            
+        print("[Startup] ChromaDB is empty or does not exist. Triggering automatic database initialization...")
+        
+        # Seeding targets
+        seeding_targets = [
+            {"source": "app_store", "dataset_id": "app_store_20260630_110857_4c70802c", "file_path": "data/sample/app_store_sample.csv"},
+            {"source": "play_store", "dataset_id": "play_store_20260630_110855_5d8e1ddd", "file_path": "data/sample/play_store_sample.csv"},
+            {"source": "reddit", "dataset_id": "reddit_20260630_110857_7aa47efc", "file_path": "data/sample/reddit_sample.json"},
+            {"source": "forum", "dataset_id": "forum_20260630_110905_91530b4d", "file_path": "data/sample/forum_sample.json"},
+        ]
+        
+        ingest_svc = IngestionService()
+        
+        for target in seeding_targets:
+            source = target["source"]
+            ds_id = target["dataset_id"]
+            file_path = target["file_path"]
+            
+            print(f"[Startup] Ingesting reviews for source: '{source}' -> dataset_id: '{ds_id}'...")
+            ingest_res = ingest_svc.ingest(
+                source=source,
+                file_path=file_path,
+                dataset_id=ds_id,
+                use_live=False,
+                persist=True
+            )
+            print(f"  Successfully ingested {len(ingest_res.records)} records.")
+            
+            print(f"[Startup] Encoding and indexing collection: '{ds_id}' in ChromaDB...")
+            run_embed_pipeline(ds_id)
+            
+            print(f"[Startup] Pre-computing and caching analytical insights for dataset: '{ds_id}'...")
+            # Trigger insight generation report caching
+            get_insights(ds_id, force_refresh=True)
+            print(f"  Cached insights for '{ds_id}' successfully.")
+            
+        print("[Startup] Automatic database initialization completed successfully!\n")
+        
     except Exception as exc:
-        print(f"Could not scan ChromaDB collections on startup: {exc}")
+        print(f"\n❌ [Startup] Critical database initialization failed: {exc}")
+        # Abort startup by raising a RuntimeError
+        raise RuntimeError("Database initialization failed. Server startup aborted.") from exc
 
 # ──────────────────────────────────────────────
 # CORS — allow Vercel-deployed Next.js frontend
