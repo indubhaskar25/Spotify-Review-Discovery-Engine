@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: spotify-review-backend
+    env: python
+    rootDirectory: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: CHROMA_PERSIST_DIR
+        value: /data/chroma
+      - key: DATA_DIR
+        value: /data
+      - key: OPENAI_API_KEY
+        sync: false # Set this in Render dashboard
+      - key: GROQ_API_KEY
+        sync: false # Set this in Render dashboard
+    disk:
+      name: chroma-data
+      mountPath: /data
+      sizeGB: 1
