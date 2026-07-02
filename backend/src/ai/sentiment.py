@@ -26,7 +26,7 @@ class SentimentAnalyzer:
 
     def __init__(self, settings: Settings | None = None) -> None:
         self.settings = settings or get_settings()
-        self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.openai_api_key
+        self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.groq_api_key
         self.model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
 
         self.client = None

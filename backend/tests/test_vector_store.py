@@ -62,7 +62,7 @@ def tmp_settings(tmp_path: Path):
     return Settings(
         chroma_persist_dir=str(tmp_path / "chroma"),
         data_dir=str(tmp_path),
-        openai_api_key="test-key",
+        groq_api_key="test-key",
     )
 
 

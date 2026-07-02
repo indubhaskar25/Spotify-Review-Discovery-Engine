@@ -12,10 +12,9 @@ services:
         value: /data/chroma
       - key: DATA_DIR
         value: /data
-      - key: OPENAI_API_KEY
-        sync: false # Set this in Render dashboard
       - key: GROQ_API_KEY
-        sync: false # Set this in Render dashboard
+        sync: false # Required for AI endpoints (Ask AI, live insight generation).
+                    # Without it, the backend starts normally and serves cached/mock data.
     disk:
       name: chroma-data
       mountPath: /data

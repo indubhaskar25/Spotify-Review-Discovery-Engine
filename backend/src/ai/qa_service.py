@@ -26,11 +26,8 @@ class QAService:
         self.settings = settings or get_settings()
         self.retrieval_service = RetrievalService(self.settings)
 
-        # Groq Client Initialization
-        self.api_key = os.environ.get("GROQ_API_KEY", "")
-        if not self.api_key:
-            # Fallback to check if openai_api_key is set (for test setups)
-            self.api_key = self.settings.openai_api_key
+        # Resolve key: env var takes precedence, settings.groq_api_key is the .env fallback.
+        self.api_key = os.environ.get("GROQ_API_KEY", "") or self.settings.groq_api_key
 
         self.model_name = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
         self.client = None

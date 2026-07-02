@@ -6,14 +6,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    openai_api_key: str = ""
+    # Groq is the only LLM provider used in this project.
+    # Set GROQ_API_KEY in the environment; leave unset to run in mock/offline mode.
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
     reddit_client_id: str = ""
     reddit_client_secret: str = ""
     reddit_user_agent: str = "spotify-review-engine/1.0"
     chroma_persist_dir: str = "./data/chroma"
     data_dir: str = "./data"
     embedding_model: str = "all-MiniLM-L6-v2"
-    openai_model: str = "gpt-4o"
     top_k_retrieval: int = Field(default=20, ge=1)
 
     model_config = SettingsConfigDict(
