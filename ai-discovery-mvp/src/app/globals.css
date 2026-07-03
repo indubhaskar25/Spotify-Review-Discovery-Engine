@@ -16,14 +16,48 @@
   --warning: #ffa429;
   --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Theme Dynamic variables */
+  --bg-color: var(--background-dark);
+  --surface-color: var(--surface-dark);
+  --surface-color-elevated: var(--surface-elevated);
+  --border-color: var(--border-subtle);
+  --text-color: var(--text-main);
+  --text-color-muted: var(--text-muted);
+  --text-color-faint: var(--text-faint);
+  --aside-bg: #171717;
+  --card-bg: #171717;
+  --chat-input-bg: #121212;
+  --header-bg: #171717;
+  --bubble-user-text: #ffffff;
+  --bubble-assistant-bg: var(--surface-elevated);
+  --bubble-assistant-text: #E0E0E0;
+}
+
+.light-mode {
+  --bg-color: #f4f4f5;
+  --surface-color: #ffffff;
+  --surface-color-elevated: #f4f4f5;
+  --border-color: #e4e4e7;
+  --text-color: #09090b;
+  --text-color-muted: #71717a;
+  --text-color-faint: #a1a1aa;
+  --aside-bg: #ffffff;
+  --card-bg: #ffffff;
+  --chat-input-bg: #ffffff;
+  --header-bg: #ffffff;
+  --bubble-user-text: #ffffff;
+  --bubble-assistant-bg: #ffffff;
+  --bubble-assistant-text: #18181b;
 }
 
 body {
-  background-color: var(--background-dark);
-  color: var(--text-main);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   font-family: var(--font-body);
   overflow-x: hidden;
   margin: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom Scrollbar */
@@ -33,7 +67,8 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-dark);
+  background: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -41,8 +76,52 @@ body {
   border-radius: 4px;
 }
 
+.light-mode ::-webkit-scrollbar-thumb {
+  background: #cccccc;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #444444;
+}
+
+/* Theme helper classes for smooth transitions */
+.compass-sidebar {
+  background-color: var(--aside-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.compass-main {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.compass-header {
+  background-color: var(--header-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.compass-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.compass-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.compass-input {
+  background-color: var(--chat-input-bg);
+  border-color: var(--border-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 /* Premium Typography */
@@ -70,9 +149,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes pulseBorder {
-  0% { border-color: var(--border-subtle); }
+  0% { border-color: var(--border-color); }
   50% { border-color: var(--primary); }
-  100% { border-color: var(--border-subtle); }
+  100% { border-color: var(--border-color); }
 }
 
 .animate-slide-up {
@@ -83,19 +162,42 @@ h1, h2, h3, h4, h5, h6 {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* Skeleton Loading Animation */
+@keyframes skeletonPulse {
+  0% { background-color: rgba(255, 255, 255, 0.05); }
+  50% { background-color: rgba(255, 255, 255, 0.12); }
+  100% { background-color: rgba(255, 255, 255, 0.05); }
+}
+
+@keyframes skeletonPulseLight {
+  0% { background-color: rgba(0, 0, 0, 0.05); }
+  50% { background-color: rgba(0, 0, 0, 0.10); }
+  100% { background-color: rgba(0, 0, 0, 0.05); }
+}
+
+.skeleton-pulse {
+  animation: skeletonPulse 1.5s infinite ease-in-out;
+}
+
+.light-mode .skeleton-pulse {
+  animation: skeletonPulseLight 1.5s infinite ease-in-out;
+}
+
 /* Chat bubble styling */
 .chat-bubble-user {
   background: linear-gradient(135deg, var(--primary) 0%, #179443 100%);
-  color: white;
+  color: #ffffff;
   border-radius: 18px 18px 2px 18px;
   box-shadow: 0 4px 12px rgba(29, 185, 84, 0.2);
 }
 
 .chat-bubble-assistant {
-  background-color: var(--surface-elevated);
+  background-color: var(--bubble-assistant-bg);
+  color: var(--bubble-assistant-text);
   border-radius: 18px 18px 18px 2px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-color);
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 /* Adventurousness Slider styling */
@@ -130,31 +232,42 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.light-mode .glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 /* Interactive Mood Tags */
 .mood-tag-active {
   background: linear-gradient(135deg, rgba(29, 185, 84, 0.2) 0%, rgba(29, 185, 84, 0.05) 100%);
   border-color: var(--primary);
-  color: #FFFFFF;
+  color: var(--primary);
   box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.light-mode .mood-tag-active {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.1) 0%, rgba(29, 185, 84, 0.02) 100%);
+  border-color: var(--primary);
+  color: #179443;
 }
 
 /* Markdown response styling inside assistant bubbles */
 .prose-custom {
-  color: #E0E0E0;
+  color: var(--bubble-assistant-text);
   line-height: 1.6;
 }
 
 .prose-custom h2 {
-  color: #FFFFFF;
+  color: var(--text-color);
   font-size: 1.25rem;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.25rem;
 }
 
 .prose-custom h3 {
-  color: #FFFFFF;
+  color: var(--text-color);
   font-size: 1.1rem;
   margin-top: 1rem;
   margin-bottom: 0.25rem;
@@ -182,14 +295,22 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.9em;
 }
 
+.light-mode .prose-custom code {
+  background-color: rgba(0,0,0,0.05);
+}
+
 .prose-custom blockquote {
   border-left: 3px solid var(--primary);
   padding-left: 0.75rem;
-  color: var(--text-muted);
+  color: var(--text-color-muted);
   font-style: italic;
   margin: 0.75rem 0;
   background-color: rgba(255, 255, 255, 0.02);
   border-radius: 0 4px 4px 0;
   padding-top: 4px;
   padding-bottom: 4px;
+}
+
+.light-mode .prose-custom blockquote {
+  background-color: rgba(0, 0, 0, 0.02);
 }
