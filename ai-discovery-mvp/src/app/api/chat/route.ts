@@ -7,6 +7,68 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY || "",
 });
 
+// Helper to generate dynamic, contextual mock response if Groq API key is missing or fails
+function generateLocalFallbackResponse(
+  persona: any,
+  adventurousnessVal: number,
+  selectedMoods: string[],
+  listenerProfile: any,
+  warningMsg: string = ""
+) {
+  // Filter catalog tracks to avoid loops and skipped tempos/genres
+  let candidates = TRACKS.filter(t => {
+    // Exclude tracks that overlap with frequently replayed (to avoid loops)
+    const isReplayed = listenerProfile.frequently_replayed.toLowerCase().includes(t.artist.toLowerCase()) ||
+                       listenerProfile.frequently_replayed.toLowerCase().includes(t.title.toLowerCase());
+    if (isReplayed) return false;
+
+    // Exclude tracks matching skipped patterns
+    const isSkipped = listenerProfile.frequently_skipped.toLowerCase().includes(t.genre.toLowerCase()) ||
+                      t.vibe.some((v: string) => listenerProfile.frequently_skipped.toLowerCase().includes(v.toLowerCase()));
+    if (isSkipped) return false;
+
+    return true;
+  });
+
+  if (candidates.length === 0) {
+    candidates = TRACKS;
+  }
+
+  // Sort by adventurousness compatibility
+  // If adventurousness > 70, prefer low popularity (obscure deep cuts)
+  // If adventurousness < 35, prefer higher popularity (safer choices)
+  const sorted = [...candidates].sort((a, b) => {
+    if (adventurousnessVal > 70) {
+      return a.popularity - b.popularity; // ascending (lower popularity first)
+    } else if (adventurousnessVal < 35) {
+      return b.popularity - a.popularity; // descending (higher popularity first)
+    }
+    return 0.5 - Math.random(); // shuffle
+  });
+
+  const selectedRecs = sorted.slice(0, 3);
+  const picks = selectedRecs.map(t => {
+    let reason = "";
+    if (selectedMoods.length > 0) {
+      reason = `Compass selected this ${t.genre} track ("${t.title}" by ${t.artist}) because it perfectly captures your desired "${selectedMoods.join(", ")}" mood, aligning with your ${persona?.name || "Explorer"} context while bypassing your usual loop of ${listenerProfile.frequently_replayed}.`;
+    } else {
+      reason = `Compass mapped this ${t.genre} deep-cut to your unexplored target genres, offering a refreshing sound that avoids your skipped patterns.`;
+    }
+    return {
+      track_id: t.id,
+      artist: t.artist,
+      title: t.title,
+      reason
+    };
+  });
+
+  return {
+    framing: `${warningMsg}Here are three handpicked discoveries to help you explore outside your comfort zone.`,
+    reasoning: `We bypassed your habit of repeating the same tracks by selecting atmospheric ${selectedRecs[0]?.genre || "Alternative"} and ambient electronic pieces.`,
+    picks
+  };
+}
+
 export async function POST(req: Request) {
   try {
     const { messages, persona, adventurousness, moodTags } = await req.json();
@@ -50,6 +112,27 @@ export async function POST(req: Request) {
       rarely_explored_genres: persona?.rarely_explored_genres || [],
       recent_listening_patterns: persona?.recent_listening_patterns || ""
     };
+
+    // Determine if the API key is configured and valid
+    const rawKey = process.env.GROQ_API_KEY || "";
+    const isKeyConfigured = 
+      rawKey.trim() !== "" && 
+      rawKey.startsWith("gsk_") && 
+      !rawKey.includes("your_groq_api_key_here") && 
+      rawKey !== "undefined" && 
+      rawKey !== "null";
+
+    if (!isKeyConfigured) {
+      console.warn("GROQ_API_KEY is not configured or uses placeholder value. Using local fallback generator.");
+      const mockResponse = generateLocalFallbackResponse(
+        persona,
+        adventurousnessVal,
+        selectedMoods,
+        listenerProfile,
+        "⚠️ [Offline Simulation Mode] "
+      );
+      return NextResponse.json(mockResponse);
+    }
 
     const systemPrompt = `You are "Spotify Compass" — Spotify's AI-powered Music Discovery Companion.
 Tagline: "Find your next favorite song—not just another familiar one."
@@ -125,7 +208,6 @@ JSON Schema:
   ]
 }`;
 
-    // 4. Compile messages
     const apiMessages = [
       { role: "system", content: systemPrompt },
       ...messages.map((m: any) => ({
@@ -134,66 +216,52 @@ JSON Schema:
       })),
     ];
 
-    // 5. Call Groq
     const model = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
-    
-    if (!process.env.GROQ_API_KEY) {
-      // Mock fallback response for local development without API key
-      const mockMatches = TRACKS.filter(t => 
-        persona?.rarely_explored_genres?.includes(t.genre) || 
-        t.vibe.some((v: string) => selectedMoods.map((sm: string) => sm.toLowerCase()).includes(v))
-      ).slice(0, 3);
+
+    try {
+      const completion = await groq.chat.completions.create({
+        messages: apiMessages,
+        model,
+        temperature: 0.7,
+        max_tokens: 1500,
+        response_format: { type: "json_object" }
+      });
+
+      const responseText = completion.choices[0]?.message?.content || "{}";
       
-      const selectedRecs = mockMatches.length >= 3 ? mockMatches : TRACKS.slice(0, 3);
-      const picks = selectedRecs.map(t => ({
-        track_id: t.id,
-        artist: t.artist,
-        title: t.title,
-        reason: `Compass matched this ${t.genre} gem because it perfectly aligns with your "${selectedMoods.join(", ")}" mood, bypassing your usual loop of ${listenerProfile.frequently_replayed}.`
-      }));
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(responseText.trim());
+      } catch (parseErr) {
+        console.warn("Failed to parse direct JSON from Groq, attempting regex extraction", parseErr);
+        const jsonRegex = /\{[\s\S]*\}/;
+        const match = responseText.match(jsonRegex);
+        if (match) {
+          try {
+            parsedJson = JSON.parse(match[0]);
+          } catch (regexErr) {
+            console.error("Regex extraction parsing failed as well", regexErr);
+            throw new Error("Invalid JSON returned by assistant");
+          }
+        } else {
+          throw new Error("Could not extract JSON block from assistant response");
+        }
+      }
 
-      const mockResponse = {
-        framing: `Here are three handpicked discoveries to help you explore outside your comfort zone.`,
-        reasoning: `We bypassed your habit of repeating the same tracks by selecting atmospheric ${selectedRecs[0].genre} and ambient electronic pieces.`,
-        picks
-      };
-
+      return NextResponse.json(parsedJson);
+    } catch (groqErr: any) {
+      console.warn("Groq API call encountered an error. Falling back to local fallback generator.", groqErr);
+      const mockResponse = generateLocalFallbackResponse(
+        persona,
+        adventurousnessVal,
+        selectedMoods,
+        listenerProfile,
+        "⚠️ [Offline Simulation Mode] "
+      );
       return NextResponse.json(mockResponse);
     }
-
-    const completion = await groq.chat.completions.create({
-      messages: apiMessages,
-      model,
-      temperature: 0.7,
-      max_tokens: 1500,
-      response_format: { type: "json_object" }
-    });
-
-    const responseText = completion.choices[0]?.message?.content || "{}";
-    
-    // Parse to ensure it is valid JSON
-    let parsedJson;
-    try {
-      parsedJson = JSON.parse(responseText.trim());
-    } catch (parseErr) {
-      console.warn("Failed to parse direct JSON from Groq, attempting regex extraction", parseErr);
-      const jsonRegex = /\{[\s\S]*\}/;
-      const match = responseText.match(jsonRegex);
-      if (match) {
-        try {
-          parsedJson = JSON.parse(match[0]);
-        } catch (regexErr) {
-          console.error("Regex extraction parsing failed as well", regexErr);
-          throw new Error("Invalid JSON returned by assistant");
-        }
-      } else {
-        throw new Error("Could not extract JSON block from assistant response");
-      }
-    }
-
-    return NextResponse.json(parsedJson);
   } catch (err: any) {
-    console.error("Error in Next.js chat route:", err);
+    console.error("Fatal error in Next.js chat route:", err);
     return NextResponse.json(
       { error: err.message || "Internal server error" },
       { status: 500 }
