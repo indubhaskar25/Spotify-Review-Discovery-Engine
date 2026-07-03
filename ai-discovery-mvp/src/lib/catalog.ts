@@ -6,10 +6,13 @@ export interface Track {
   genre: string;
   tempo: "slow" | "medium" | "fast";
   vibe: string[];
+  mood_tags: string[];
   popularity: number; // 0-100, where lower is more obscure/hidden gem
   duration: string;
   description: string;
   artworkSeed: string;
+  energy: "low" | "medium" | "high";
+  era: string;
 }
 
 export const TRACKS: Track[] = [
@@ -22,10 +25,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "medium",
     vibe: ["melancholic", "crescendo", "chamber pop"],
+    mood_tags: ["melancholic", "crescendo", "chamber pop"],
     popularity: 42,
     duration: "6:12",
     description: "A sweeping, emotional blend of horns, strings, and intense vocals that builds to a massive orchestral peak.",
-    artworkSeed: "bcnr_ocean"
+    artworkSeed: "bcnr_ocean",
+    energy: "medium",
+    era: "2020s"
   },
   {
     id: "track_indie_2",
@@ -35,10 +41,13 @@ export const TRACKS: Track[] = [
     genre: "Dream Pop",
     tempo: "medium",
     vibe: ["sunny", "nostalgic", "airy"],
+    mood_tags: ["sunny", "nostalgic", "airy"],
     popularity: 58,
     duration: "3:42",
     description: "Sun-drenched, guitar-driven dream pop from Australia. Perfect for seaside drives and warm afternoons.",
-    artworkSeed: "geowulf_salt"
+    artworkSeed: "geowulf_salt",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_indie_3",
@@ -48,10 +57,13 @@ export const TRACKS: Track[] = [
     genre: "Indie Rock",
     tempo: "fast",
     vibe: ["angsty", "raw", "guitar-heavy"],
+    mood_tags: ["angsty", "raw", "guitar-heavy"],
     popularity: 62,
     duration: "4:55",
     description: "Raw, guitar-centric indie rock detailing unrequited teenage longing with incredible emotional clarity.",
-    artworkSeed: "snail_mail_pristine"
+    artworkSeed: "snail_mail_pristine",
+    energy: "high",
+    era: "2010s"
   },
   {
     id: "track_indie_4",
@@ -61,10 +73,13 @@ export const TRACKS: Track[] = [
     genre: "Indie Pop",
     tempo: "medium",
     vibe: ["reverberant", "bittersweet", "dreamy"],
+    mood_tags: ["reverberant", "bittersweet", "dreamy"],
     popularity: 68,
     duration: "3:15",
     description: "Fuzzy, jangle-pop guitars surrounding a bittersweet breakup story. An absolute modern indie anthem.",
-    artworkSeed: "alvvays_undertow"
+    artworkSeed: "alvvays_undertow",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_indie_5",
@@ -74,10 +89,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "medium",
     vibe: ["catchy", "emo-pop", "honest"],
+    mood_tags: ["catchy", "emo-pop", "honest"],
     popularity: 45,
     duration: "4:28",
     description: "An incredibly infectious alternative track that deals with coping mechanisms and regrets with self-aware humor.",
-    artworkSeed: "oso_oso_drunk"
+    artworkSeed: "oso_oso_drunk",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_indie_6",
@@ -87,10 +105,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "slow",
     vibe: ["ethereal", "acoustic", "soaring"],
+    mood_tags: ["ethereal", "acoustic", "soaring"],
     popularity: 55,
     duration: "3:41",
     description: "Soaring falsettos over fragile acoustic picking and ambient brass swells. For fans of Bon Iver.",
-    artworkSeed: "novo_amor_pluto"
+    artworkSeed: "novo_amor_pluto",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_indie_7",
@@ -100,10 +121,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "slow",
     vibe: ["cinematic", "delicate", "uplifting"],
+    mood_tags: ["cinematic", "delicate", "uplifting"],
     popularity: 51,
     duration: "3:18",
     description: "A gorgeous, crescendo-heavy acoustic dreamscape that feels like a quiet sunburst on a dark morning.",
-    artworkSeed: "novo_dark"
+    artworkSeed: "novo_dark",
+    energy: "low",
+    era: "2020s"
   },
 
   // 2. Dream Pop / Ambient
@@ -115,10 +139,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "slow",
     vibe: ["warm", "chill", "retro-electronic"],
+    mood_tags: ["warm", "chill", "retro-electronic"],
     popularity: 60,
     duration: "4:48",
     description: "Warm, analog synth melodies layered over dusty down-tempo beats. Incredible for coding and focused working.",
-    artworkSeed: "tycho_amber"
+    artworkSeed: "tycho_amber",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_dream_2",
@@ -128,10 +155,13 @@ export const TRACKS: Track[] = [
     genre: "Electronic",
     tempo: "fast",
     vibe: ["hypnotic", "intense", "cinematic"],
+    mood_tags: ["hypnotic", "intense", "cinematic"],
     popularity: 56,
     duration: "5:36",
     description: "An immersive, building techno masterpiece that blends organic piano chords with dark, granular synth textures.",
-    artworkSeed: "hopkins_emerald"
+    artworkSeed: "hopkins_emerald",
+    energy: "high",
+    era: "2010s"
   },
   {
     id: "track_dream_3",
@@ -141,10 +171,13 @@ export const TRACKS: Track[] = [
     genre: "Electronic",
     tempo: "slow",
     vibe: ["relaxed", "sensual", "airy"],
+    mood_tags: ["relaxed", "sensual", "airy"],
     popularity: 69,
     duration: "4:39",
     description: "Lush, trip-hop rhythms and whispered female vocals that create a feeling of weightlessness.",
-    artworkSeed: "telepop_breathe"
+    artworkSeed: "telepop_breathe",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_dream_4",
@@ -154,10 +187,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "medium",
     vibe: ["minimalist", "piano", "hypnotic"],
+    mood_tags: ["minimalist", "piano", "hypnotic"],
     popularity: 52,
     duration: "6:00",
     description: "Collaborative project combining minimalist classical piano loops with crisp, micro-programmed minimal house beats.",
-    artworkSeed: "kiasmos_looped"
+    artworkSeed: "kiasmos_looped",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_dream_5",
@@ -167,10 +203,13 @@ export const TRACKS: Track[] = [
     genre: "Experimental",
     tempo: "slow",
     vibe: ["moody", "dark", "harpsichord"],
+    mood_tags: ["moody", "dark", "harpsichord"],
     popularity: 74,
     duration: "5:31",
     description: "A dark, moody masterpiece featuring a heartbeat rhythm, harpsichord picking, and stunning vocals by Elizabeth Fraser.",
-    artworkSeed: "massive_teardrop"
+    artworkSeed: "massive_teardrop",
+    energy: "low",
+    era: "90s"
   },
   {
     id: "track_dream_6",
@@ -180,10 +219,13 @@ export const TRACKS: Track[] = [
     genre: "Dream Pop",
     tempo: "medium",
     vibe: ["reverberant", "nocturnal", "iconic"],
+    mood_tags: ["reverberant", "nocturnal", "iconic"],
     popularity: 79,
     duration: "2:08",
     description: "A short, instrumental masterpiece of minimalist reverb guitar, muted bass, and an atmospheric keyboard line.",
-    artworkSeed: "xx_intro"
+    artworkSeed: "xx_intro",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_dream_7",
@@ -193,10 +235,13 @@ export const TRACKS: Track[] = [
     genre: "Experimental",
     tempo: "slow",
     vibe: ["jazzy", "mysterious", "down-tempo"],
+    mood_tags: ["jazzy", "mysterious", "down-tempo"],
     popularity: 38,
     duration: "5:36",
     description: "A mysterious, slow-burning trip-hop track built on acoustic double-bass slices and dusty, chopped jazz drums.",
-    artworkSeed: "tobin_slowly"
+    artworkSeed: "tobin_slowly",
+    energy: "low",
+    era: "2000s"
   },
 
   // 3. Folk / Acoustic
@@ -208,10 +253,13 @@ export const TRACKS: Track[] = [
     genre: "Folk",
     tempo: "slow",
     vibe: ["wintry", "delicate", "acoustic"],
+    mood_tags: ["wintry", "delicate", "acoustic"],
     popularity: 72,
     duration: "5:36",
     description: "Crystalline acoustic guitar picking layered with muted brass and Justin Vernon's iconic, layered falsetto.",
-    artworkSeed: "bon_iver_holocene"
+    artworkSeed: "bon_iver_holocene",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_folk_2",
@@ -221,10 +269,13 @@ export const TRACKS: Track[] = [
     genre: "Folk",
     tempo: "medium",
     vibe: ["choral", "baroque", "joyful"],
+    mood_tags: ["choral", "baroque", "joyful"],
     popularity: 66,
     duration: "2:27",
     description: "A short folk round featuring gorgeous, layered vocal harmonies that evoke snowy evergreen forests.",
-    artworkSeed: "fleet_foxes_hymnal"
+    artworkSeed: "fleet_foxes_hymnal",
+    energy: "medium",
+    era: "2000s"
   },
   {
     id: "track_folk_3",
@@ -234,10 +285,13 @@ export const TRACKS: Track[] = [
     genre: "Folk",
     tempo: "slow",
     vibe: ["warm", "romantic", "intimate"],
+    mood_tags: ["warm", "romantic", "intimate"],
     popularity: 70,
     duration: "3:30",
     description: "An intimate fingerpicked folk song featuring warm harmonies and soft whistle hooks. Extremely comforting.",
-    artworkSeed: "paper_kites_bloom"
+    artworkSeed: "paper_kites_bloom",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_folk_4",
@@ -247,10 +301,13 @@ export const TRACKS: Track[] = [
     genre: "Folk",
     tempo: "slow",
     vibe: ["haunting", "wintry", "raw"],
+    mood_tags: ["haunting", "wintry", "raw"],
     popularity: 77,
     duration: "4:49",
     description: "A haunting collaboration of acoustic guitars, dark cello hums, and intertwined falsettos. Perfect for rainy days.",
-    artworkSeed: "rosyln_bon"
+    artworkSeed: "rosyln_bon",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_folk_5",
@@ -260,10 +317,13 @@ export const TRACKS: Track[] = [
     genre: "Folk",
     tempo: "slow",
     vibe: ["chamber-folk", "intimate", "narrative"],
+    mood_tags: ["chamber-folk", "intimate", "narrative"],
     popularity: 49,
     duration: "5:02",
     description: "A beautiful, horn-and-vibraphone laced indie folk track describing bleak Midwestern winter landscapes.",
-    artworkSeed: "sufjan_michigan"
+    artworkSeed: "sufjan_michigan",
+    energy: "low",
+    era: "2000s"
   },
 
   // 4. Neo Soul / Jazz Fusion
@@ -275,10 +335,13 @@ export const TRACKS: Track[] = [
     genre: "Neo Soul",
     tempo: "medium",
     vibe: ["soulful", "funky", "rhythmic"],
+    mood_tags: ["soulful", "funky", "rhythmic"],
     popularity: 58,
     duration: "4:01",
     description: "Complex, off-kilter neo-soul rhythms anchored by Nai Palm's expressive, acrobatic soul vocals.",
-    artworkSeed: "hiatus_nakamarra"
+    artworkSeed: "hiatus_nakamarra",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_soul_2",
@@ -288,10 +351,13 @@ export const TRACKS: Track[] = [
     genre: "Neo Soul",
     tempo: "medium",
     vibe: ["organic", "warm", "bouncy"],
+    mood_tags: ["organic", "warm", "bouncy"],
     popularity: 61,
     duration: "3:31",
     description: "A warm, personal R&B song constructed around organic basslines, jazz guitars, and smooth backing vocals.",
-    artworkSeed: "lianne_green"
+    artworkSeed: "lianne_green",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_soul_3",
@@ -301,10 +367,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "slow",
     vibe: ["lofi", "groovy", "psychedelic"],
+    mood_tags: ["lofi", "groovy", "psychedelic"],
     popularity: 64,
     duration: "3:50",
     description: "A dusty, lofi psychedelic R&B jam featuring clean guitar riffs and lazy, soul-influenced vocal delivery.",
-    artworkSeed: "umo_so_good"
+    artworkSeed: "umo_so_good",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_soul_4",
@@ -314,10 +383,13 @@ export const TRACKS: Track[] = [
     genre: "Jazz",
     tempo: "medium",
     vibe: ["improvisational", "sexy", "groovy"],
+    mood_tags: ["improvisational", "sexy", "groovy"],
     popularity: 76,
     duration: "5:02",
     description: "An improvisational loop masterpiece featuring saxophone, electric keyboards, guitars, and smooth vocals recorded live in Paris.",
-    artworkSeed: "masego_tadow"
+    artworkSeed: "masego_tadow",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_soul_5",
@@ -327,10 +399,13 @@ export const TRACKS: Track[] = [
     genre: "Neo Soul",
     tempo: "slow",
     vibe: ["funky", "psychedelic-soul", "sultry"],
+    mood_tags: ["funky", "psychedelic-soul", "sultry"],
     popularity: 82,
     duration: "5:26",
     description: "A heavy, retro funk and soul track with pitch-shifted vocals, groovy basslines, and a soaring analog synth solo.",
-    artworkSeed: "gambino_redbone"
+    artworkSeed: "gambino_redbone",
+    energy: "medium",
+    era: "2010s"
   },
 
   // 5. Hip-Hop / R&B
@@ -342,10 +417,13 @@ export const TRACKS: Track[] = [
     genre: "Hip-Hop",
     tempo: "slow",
     vibe: ["distorted", "dreamy", "introspective"],
+    mood_tags: ["distorted", "dreamy", "introspective"],
     popularity: 78,
     duration: "4:35",
     description: "Introspective hip-hop built around a distorted, warbling guitar loop produced by Steve Lacy. Very atmospheric.",
-    artworkSeed: "kendrick_pride"
+    artworkSeed: "kendrick_pride",
+    energy: "low",
+    era: "2010s"
   },
   {
     id: "track_hiphop_2",
@@ -355,10 +433,13 @@ export const TRACKS: Track[] = [
     genre: "Hip-Hop",
     tempo: "medium",
     vibe: ["introspective", "chill", "two-part"],
+    mood_tags: ["introspective", "chill", "two-part"],
     popularity: 79,
     duration: "5:45",
-    description: "A lush, atmospheric hip-hop track that shifts halfway through into a dreamy synth-laden reflection on healing.",
-    artworkSeed: "mac_selfcare"
+    description: "A digital soundscape that shifts halfway through into a dreamy synth-laden reflection on healing.",
+    artworkSeed: "mac_selfcare",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_hiphop_3",
@@ -368,10 +449,13 @@ export const TRACKS: Track[] = [
     genre: "Electronic",
     tempo: "fast",
     vibe: ["bumpy", "futuristic", "soulful"],
+    mood_tags: ["bumpy", "futuristic", "soulful"],
     popularity: 60,
     duration: "4:58",
     description: "A futuristic beat-scene track that fuses electronic synths, bouncy sub-bass, and Anderson .Paak's raspy soul hooks.",
-    artworkSeed: "kaytra_glow"
+    artworkSeed: "kaytra_glow",
+    energy: "high",
+    era: "2010s"
   },
   {
     id: "track_hiphop_4",
@@ -381,10 +465,13 @@ export const TRACKS: Track[] = [
     genre: "R&B",
     tempo: "medium",
     vibe: ["warm", "lush", "orchestral"],
+    mood_tags: ["warm", "lush", "orchestral"],
     popularity: 85,
     duration: "3:04",
     description: "A beautifully lush alternative R&B song featuring acoustic piano, soft strings, and backing vocals by Beyoncé.",
-    artworkSeed: "ocean_pink"
+    artworkSeed: "ocean_pink",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_hiphop_5",
@@ -394,10 +481,13 @@ export const TRACKS: Track[] = [
     genre: "R&B",
     tempo: "slow",
     vibe: ["classic", "organic-hiphop", "spiritual"],
+    mood_tags: ["classic", "organic-hiphop", "spiritual"],
     popularity: 67,
     duration: "3:45",
     description: "The definitive Neo Soul track, combining organic hip-hop beats, warm jazz Fender Rhodes piano, and Badu's spiritual vocals.",
-    artworkSeed: "erykah_on"
+    artworkSeed: "erykah_on",
+    energy: "low",
+    era: "90s"
   },
 
   // 6. World Music / Experimental
@@ -409,10 +499,13 @@ export const TRACKS: Track[] = [
     genre: "World Music",
     tempo: "slow",
     vibe: ["acoustic", "senegalese", "spiritual"],
+    mood_tags: ["acoustic", "senegalese", "spiritual"],
     popularity: 30,
     duration: "4:32",
     description: "Stunning Senegalese acoustic folk featuring intricate kora picking, acoustic guitar, and Baaba Maal's powerful vocals.",
-    artworkSeed: "maal_mariama"
+    artworkSeed: "maal_mariama",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_world_2",
@@ -422,10 +515,13 @@ export const TRACKS: Track[] = [
     genre: "Experimental",
     tempo: "medium",
     vibe: ["darkwave", "gothic", "hypnotic"],
+    mood_tags: ["darkwave", "gothic", "hypnotic"],
     popularity: 54,
     duration: "3:52",
     description: "A darkwave post-punk track featuring a driving, cold bassline, repeating analog synth lines, and haunting dual vocals.",
-    artworkSeed: "lebanon_gallow"
+    artworkSeed: "lebanon_gallow",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_world_3",
@@ -435,10 +531,13 @@ export const TRACKS: Track[] = [
     genre: "Electronic",
     tempo: "medium",
     vibe: ["house", "glofi", "smooth"],
+    mood_tags: ["house", "glofi", "smooth"],
     popularity: 59,
     duration: "3:24",
     description: "Lush chillwave/house crossover with smooth vocal chops, warm synth pads, and a driving, four-on-the-floor beat.",
-    artworkSeed: "toro_quartz"
+    artworkSeed: "toro_quartz",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_world_4",
@@ -448,10 +547,13 @@ export const TRACKS: Track[] = [
     genre: "Electronic",
     tempo: "fast",
     vibe: ["piano-house", "grooving", "uplifting"],
+    mood_tags: ["piano-house", "grooving", "uplifting"],
     popularity: 64,
     duration: "6:38",
     description: "An uplifting, retro-inspired house track that combines classical piano loops with energetic electronic beats and Korean vocals.",
-    artworkSeed: "peggy_starry"
+    artworkSeed: "peggy_starry",
+    energy: "high",
+    era: "2010s"
   },
   {
     id: "track_world_5",
@@ -461,10 +563,13 @@ export const TRACKS: Track[] = [
     genre: "Experimental",
     tempo: "fast",
     vibe: ["aggressive", "electronic", "industrial"],
+    mood_tags: ["aggressive", "electronic", "industrial"],
     popularity: 43,
     duration: "3:19",
     description: "A blistering, industrial electronic track featuring aggressive synthesizer sweeps and visceral, raw vocal screams.",
-    artworkSeed: "bjork_pluto"
+    artworkSeed: "bjork_pluto",
+    energy: "high",
+    era: "90s"
   },
 
   // 7. Ambient / Electronic (Deep Cuts)
@@ -476,10 +581,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "slow",
     vibe: ["minimalist", "spiritual", "peaceful"],
+    mood_tags: ["minimalist", "spiritual", "peaceful"],
     popularity: 52,
     duration: "10:11",
     description: "A legendary, extremely slow, repeating synthesizer chord progression that induces a state of deep meditation.",
-    artworkSeed: "aphex_stone"
+    artworkSeed: "aphex_stone",
+    energy: "low",
+    era: "90s"
   },
   {
     id: "track_ambient_2",
@@ -489,10 +597,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "slow",
     vibe: ["warm", "melancholic", "nostalgic"],
+    mood_tags: ["warm", "melancholic", "nostalgic"],
     popularity: 64,
     duration: "7:44",
     description: "A beautiful, drift-like synth pads composition that feels like a quiet, warm blanket on a cold afternoon.",
-    artworkSeed: "aphex_rhubarb"
+    artworkSeed: "aphex_rhubarb",
+    energy: "low",
+    era: "90s"
   },
   {
     id: "track_ambient_3",
@@ -502,10 +613,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "slow",
     vibe: ["guitar-loops", "airy", "isolated"],
+    mood_tags: ["guitar-loops", "airy", "isolated"],
     popularity: 58,
     duration: "3:42",
-    description: "A processed ambient instrumental created entirely by looping and filtering Thom Yorke's guitar playing. Hauntingly beautiful.",
-    artworkSeed: "radiohead_tree"
+    description: "A processed ambient instrumental created entirely by looping and filtering Thom Yorke's guitar playing.",
+    artworkSeed: "radiohead_tree",
+    energy: "low",
+    era: "2000s"
   },
   {
     id: "track_ambient_4",
@@ -515,10 +629,13 @@ export const TRACKS: Track[] = [
     genre: "Ambient",
     tempo: "slow",
     vibe: ["cosmic", "synths", "operatic"],
+    mood_tags: ["cosmic", "synths", "operatic"],
     popularity: 41,
     duration: "5:18",
     description: "A grand cosmic soundscape with floating female operatic notes and sweeping cinematic synthesizers.",
-    artworkSeed: "vangelis_aria"
+    artworkSeed: "vangelis_aria",
+    energy: "low",
+    era: "90s"
   },
 
   // 8. R&B (Alternative)
@@ -530,10 +647,13 @@ export const TRACKS: Track[] = [
     genre: "R&B",
     tempo: "medium",
     vibe: ["acoustic-guitar", "dreamy-rnb", "summer"],
+    mood_tags: ["acoustic-guitar", "dreamy-rnb", "summer"],
     popularity: 70,
     duration: "4:37",
     description: "Alternative R&B led by clean acoustic guitar strums, shifting into a heavy synth beat with Frank's warm melodies.",
-    artworkSeed: "ocean_biking"
+    artworkSeed: "ocean_biking",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_rnb_2",
@@ -543,10 +663,13 @@ export const TRACKS: Track[] = [
     genre: "Alternative",
     tempo: "medium",
     vibe: ["atmospheric-rnb", "guitar", "smooth"],
+    mood_tags: ["atmospheric-rnb", "guitar", "smooth"],
     popularity: 57,
     duration: "3:39",
     description: "Atmospheric, guitar-laden alternative R&B describing young love in New York with smooth, melodic vocals.",
-    artworkSeed: "jaden_soho"
+    artworkSeed: "jaden_soho",
+    energy: "medium",
+    era: "2010s"
   },
   {
     id: "track_rnb_3",
@@ -556,10 +679,13 @@ export const TRACKS: Track[] = [
     genre: "R&B",
     tempo: "slow",
     vibe: ["sensual", "warm", "minimal-groove"],
+    mood_tags: ["sensual", "warm", "minimal-groove"],
     popularity: 81,
     duration: "4:38",
     description: "A sultry, slow-grooving contemporary R&B ballad centered on minimal electric bass and Caesar's smooth vocals.",
-    artworkSeed: "caesar_getyou"
+    artworkSeed: "caesar_getyou",
+    energy: "low",
+    era: "2010s"
   },
 
   // 9. Jazz (Contemporary / Obscure)
@@ -571,10 +697,13 @@ export const TRACKS: Track[] = [
     genre: "Jazz",
     tempo: "slow",
     vibe: ["soulful-jazz", "exotic", "flute"],
+    mood_tags: ["soulful-jazz", "exotic", "flute"],
     popularity: 33,
     duration: "5:01",
     description: "A gorgeous, bluesy jazz recording featuring Lateef's unique, breathy oboe and flute solos.",
-    artworkSeed: "lateef_flamingo"
+    artworkSeed: "lateef_flamingo",
+    energy: "low",
+    era: "60s"
   },
   {
     id: "track_jazz_2",
@@ -584,10 +713,13 @@ export const TRACKS: Track[] = [
     genre: "Jazz",
     tempo: "fast",
     vibe: ["avant-garde", "explosive", "funky"],
+    mood_tags: ["avant-garde", "explosive", "funky"],
     popularity: 35,
     duration: "9:10",
     description: "An explosive, funky avant-garde jazz masterpiece featuring blazing horns and free-improvised drums.",
-    artworkSeed: "ensemble_yoyo"
+    artworkSeed: "ensemble_yoyo",
+    energy: "high",
+    era: "70s"
   },
   {
     id: "track_jazz_3",
@@ -597,9 +729,12 @@ export const TRACKS: Track[] = [
     genre: "Jazz",
     tempo: "slow",
     vibe: ["moody", "late-night", "melancholic"],
+    mood_tags: ["moody", "late-night", "melancholic"],
     popularity: 71,
     duration: "5:37",
     description: "A slow, modal jazz masterpiece featuring Miles' muted trumpet, Bill Evans' chords, and John Coltrane's tenor sax.",
-    artworkSeed: "miles_blue"
+    artworkSeed: "miles_blue",
+    energy: "low",
+    era: "50s"
   }
 ];

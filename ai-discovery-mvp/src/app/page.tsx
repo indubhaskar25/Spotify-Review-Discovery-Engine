@@ -89,51 +89,6 @@ export default function Home() {
     };
   };
 
-  // Helper to parse JSON block and separate markdown text and recommendations
-  const parseAIResponse = (text: string): { 
-    text: string; 
-    recommendations: RecommendationMatch[];
-    differentiation?: {
-      collaborativeFilteringShortcoming: string;
-      compassReasoning: string;
-    };
-  } => {
-    const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
-    const match = text.match(jsonRegex);
-    
-    if (match && match[1]) {
-      try {
-        const parsedJson = JSON.parse(match[1].trim());
-        const cleanText = text.replace(jsonRegex, "").trim();
-        
-        // Match recommended track IDs with the actual Tracks catalog
-        const recList: RecommendationMatch[] = [];
-        if (parsedJson.recommendations && Array.isArray(parsedJson.recommendations)) {
-          parsedJson.recommendations.forEach((item: any) => {
-            const trackId = item.trackId;
-            const matchedTrack = TRACKS.find(t => t.id === trackId);
-            if (matchedTrack) {
-              recList.push({
-                track: matchedTrack,
-                explanation: item.explanation || item.description || "Matches your target profile."
-              });
-            }
-          });
-        }
-
-        return {
-          text: cleanText,
-          recommendations: recList,
-          differentiation: parsedJson.differentiation
-        };
-      } catch (e) {
-        console.error("Failed to parse JSON from AI response:", e);
-      }
-    }
-    
-    return { text, recommendations: [] };
-  };
-
   // Trigger conversational API call
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || loading) return;
@@ -170,16 +125,33 @@ export default function Home() {
       }
 
       const data = await response.json();
-      const parsed = parseAIResponse(data.answer);
+      
+      // Match picked track IDs with the actual Tracks catalog
+      const recList: RecommendationMatch[] = [];
+      if (data.picks && Array.isArray(data.picks)) {
+        data.picks.forEach((item: any) => {
+          const trackId = item.track_id;
+          const matchedTrack = TRACKS.find(t => t.id === trackId);
+          if (matchedTrack) {
+            recList.push({
+              track: matchedTrack,
+              explanation: item.reason || item.explanation || "Matches your target profile."
+            });
+          }
+        });
+      }
 
       setMessages(prev => [
         ...prev,
         {
           id: Math.random().toString(),
           role: "assistant",
-          content: parsed.text,
-          recommendations: parsed.recommendations,
-          differentiation: parsed.differentiation
+          content: data.framing || "Here are your music discovery recommendations:",
+          recommendations: recList,
+          differentiation: data.reasoning ? {
+            collaborativeFilteringShortcoming: "Traditional Collaborative Filtering would recommend familiar loops and safe hits from your history.",
+            compassReasoning: data.reasoning
+          } : undefined
         }
       ]);
     } catch (err: any) {
@@ -345,16 +317,16 @@ export default function Home() {
             <div className="space-y-2 text-xs">
               <div>
                 <span className="text-zinc-500 font-semibold block text-[10px]">REPLAY TENDENCY:</span>
-                <span className="text-zinc-300">{selectedPersona.replayTendencies}</span>
+                <span className="text-zinc-300">{selectedPersona.frequently_replayed}</span>
               </div>
               <div>
                 <span className="text-zinc-500 font-semibold block text-[10px]">SKIPPED PATTERNS:</span>
-                <span className="text-zinc-300">{selectedPersona.skippedMusic}</span>
+                <span className="text-zinc-300">{selectedPersona.frequently_skipped}</span>
               </div>
               <div>
                 <span className="text-zinc-500 font-semibold block text-[10px]">UNEXPLORED GENRES:</span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {selectedPersona.unexploredGenres.map(g => (
+                  {selectedPersona.rarely_explored_genres.map(g => (
                     <span key={g} className="text-[9px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">{g}</span>
                   ))}
                 </div>

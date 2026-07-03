@@ -3,10 +3,11 @@ export interface Persona {
   name: string;
   tagline: string;
   icon: string;
-  context: string;
-  replayTendencies: string;
-  skippedMusic: string;
-  unexploredGenres: string[];
+  frequently_replayed: string;
+  frequently_skipped: string;
+  typical_listening_context: string;
+  rarely_explored_genres: string[];
+  recent_listening_patterns: string;
   suggestedPrompts: string[];
 }
 
@@ -16,10 +17,11 @@ export const PERSONAS: Persona[] = [
     name: "Late Night Explorer",
     tagline: "Unwinding in the quiet hours",
     icon: "🌙",
-    context: "Wind-down sessions, listening in a dark room. Seeking low-tempo, moody, atmospheric soundscapes that aid relaxation.",
-    replayTendencies: "Loops the same 5 slow synth-pop tracks. Suffers from high familiarity bias.",
-    skippedMusic: "Skips energetic pop, high-tempo hip-hop, or bright acoustic folk.",
-    unexploredGenres: ["Ambient", "Neo Soul", "Jazz", "Dream Pop"],
+    typical_listening_context: "Wind-down sessions, listening in a dark room at late night. Seeking low-tempo, moody, atmospheric soundscapes that aid relaxation.",
+    frequently_replayed: "The same 5 slow synth-pop tracks out of habit. Suffers from high familiarity bias.",
+    frequently_skipped: "Bright acoustic folk and high-tempo pop.",
+    rarely_explored_genres: ["Ambient", "Neo Soul", "Jazz", "Dream Pop"],
+    recent_listening_patterns: "Loops familiar slow-tempo synth-pop, skipping anything else.",
     suggestedPrompts: [
       "Give me relaxing music I've probably never heard",
       "I want hidden gems for a late night wind down",
@@ -31,14 +33,15 @@ export const PERSONAS: Persona[] = [
     name: "Gym Listener",
     tagline: "High-energy training sessions",
     icon: "💪",
-    context: "High-intensity workouts and runs. Seeking driving rhythms, fast-tempo, electronic beats to maintain workout cadence.",
-    replayTendencies: "Loops the same workout playlist of 10 mainstream EDM and trap songs.",
-    skippedMusic: "Skips slow ballads, delicate acoustic folk, and classical tracks.",
-    unexploredGenres: ["Alternative Hip-Hop", "Experimental", "Electronic (Deep Cuts)", "Neo Soul"],
+    typical_listening_context: "High-intensity workouts and runs. Seeking driving rhythms, fast-tempo, electronic beats to maintain workout cadence.",
+    frequently_replayed: "Loops the same workout playlist of 10 mainstream EDM and trap songs.",
+    frequently_skipped: "Slow ballads, delicate acoustic folk, and classical tracks.",
+    rarely_explored_genres: ["Alternative Hip-Hop", "Experimental", "Electronic (Deep Cuts)", "Neo Soul"],
+    recent_listening_patterns: "Replays high-energy dance pop, skipping low-tempo tracks immediately.",
     suggestedPrompts: [
+      "Help me escape my workout playlist",
       "Give me high-tempo workout beats outside mainstream EDM",
-      "Upbeat driving rhythms that aren't typical pop hits",
-      "Help me escape my repetitive gym playlist loops"
+      "Upbeat driving rhythms that aren't typical pop hits"
     ]
   },
   {
@@ -46,13 +49,14 @@ export const PERSONAS: Persona[] = [
     name: "Curious Indie Fan",
     tagline: "Searching beyond the charts",
     icon: "👥",
-    context: "Looking to actively discover new artists outside the Billboard charts. High exploration intent.",
-    replayTendencies: "Repeatedly plays the same 90s alternative bands out of habit.",
-    skippedMusic: "Skips mainstream radio pop hits and commercial trap.",
-    unexploredGenres: ["Indie Rock", "Dream Pop", "Psychedelic R&B", "Experimental"],
+    typical_listening_context: "Looking to actively discover new artists outside the Billboard charts. High exploration intent.",
+    frequently_replayed: "Repeatedly plays the same 90s alternative bands out of habit.",
+    frequently_skipped: "Mainstream radio pop hits and commercial trap.",
+    rarely_explored_genres: ["Indie Rock", "Dream Pop", "Psychedelic R&B", "Experimental"],
+    recent_listening_patterns: "Focuses on guitar-based alternative, ignoring electronic or contemporary soul.",
     suggestedPrompts: [
       "Something like Bon Iver but more upbeat for a rainy commute",
-      "Help me escape my usual 90s alternative habits",
+      "Help me escape my usual listening habits",
       "Surprise me with obscure indie rock or dream pop gems"
     ]
   },
@@ -61,12 +65,13 @@ export const PERSONAS: Persona[] = [
     name: "Focus & Study",
     tagline: "Deep work concentration",
     icon: "🎧",
-    context: "Deep work, coding, writing, or reading. Needs instrumental-focused or low-lyric music to maintain focus.",
-    replayTendencies: "Plays the same lofi hip hop beats stream continuously.",
-    skippedMusic: "Skips songs with dominant vocals, sudden tempo changes, or aggressive beats.",
-    unexploredGenres: ["Ambient", "Jazz (Contemporary)", "Dream Pop"],
+    typical_listening_context: "Deep work, coding, writing, or reading. Needs instrumental-focused or low-lyric music to maintain focus.",
+    frequently_replayed: "Plays the same lofi hip hop beats stream continuously.",
+    frequently_skipped: "Songs with dominant vocals, sudden tempo changes, or aggressive beats.",
+    rarely_explored_genres: ["Ambient", "Jazz (Contemporary)", "Dream Pop"],
+    recent_listening_patterns: "Loops study beats, skipping lyrical songs to avoid distraction.",
     suggestedPrompts: [
-      "I want hidden gems for deep work and coding",
+      "I want hidden gems for deep work",
       "Minimalist instrumental music I haven't heard before",
       "Relaxing down-tempo soundscapes that won't distract me"
     ]
@@ -76,13 +81,14 @@ export const PERSONAS: Persona[] = [
     name: "Weekend Road Trip",
     tagline: "Engaging driving anthems",
     icon: "🚗",
-    context: "Long drives with friends. Needs engaging, mid-to-fast-tempo tracks that keep energy up without being fatiguing.",
-    replayTendencies: "Replays classic rock and 2010s indie pop anthems.",
-    skippedMusic: "Skips slow ambient drones, depressing acoustic folk, or experimental noise.",
-    unexploredGenres: ["Alternative R&B", "Dream Pop", "Upbeat Indie", "Neo Soul"],
+    typical_listening_context: "Long drives with friends. Needs engaging, mid-to-fast-tempo tracks that keep energy up without being fatiguing.",
+    frequently_replayed: "Replays classic rock and 2010s indie pop anthems.",
+    frequently_skipped: "Slow ambient drones, depressing acoustic folk, or experimental noise.",
+    rarely_explored_genres: ["Alternative R&B", "Dream Pop", "Upbeat Indie", "Neo Soul"],
+    recent_listening_patterns: "Plays high-tempo nostalgia playlists, skipping quiet/moody tracks.",
     suggestedPrompts: [
+      "Surprise me—but stay close to my taste",
       "Give me driving anthems outside classic rock",
-      "Surprise me—but stay close to my road trip taste",
       "Upbeat indie and alternative R&B hidden gems for a drive"
     ]
   }
