@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --background-dark: #121212;
+  --surface-dark: #191919;
+  --surface-elevated: #242424;
+  --primary: #1DB954;
+  --primary-glow: rgba(29, 185, 84, 0.15);
+  --text-main: #FFFFFF;
+  --text-muted: #A7A7A7;
+  --text-faint: #727272;
+  --border-subtle: #2A2A2A;
+  --success: #1ed760;
+  --warning: #ffa429;
+  --font-display: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--background-dark);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
+
+/* Premium Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Custom Animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseBorder {
+  0% { border-color: var(--border-subtle); }
+  50% { border-color: var(--primary); }
+  100% { border-color: var(--border-subtle); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Chat bubble styling */
+.chat-bubble-user {
+  background: linear-gradient(135deg, var(--primary) 0%, #179443 100%);
+  color: white;
+  border-radius: 18px 18px 2px 18px;
+  box-shadow: 0 4px 12px rgba(29, 185, 84, 0.2);
+}
+
+.chat-bubble-assistant {
+  background-color: var(--surface-elevated);
+  border-radius: 18px 18px 18px 2px;
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Adventurousness Slider styling */
+.slider-track-gradient {
+  background: linear-gradient(to right, #1DB954 0%, #E91429 100%);
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--primary);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+  transition: all 0.2s ease;
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--primary);
+  border-color: #FFFFFF;
+}
+
+/* Custom Glassmorphism Panels */
+.glass-panel {
+  background: rgba(25, 25, 25, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Interactive Mood Tags */
+.mood-tag-active {
+  background: linear-gradient(135deg, rgba(29, 185, 84, 0.2) 0%, rgba(29, 185, 84, 0.05) 100%);
+  border-color: var(--primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+/* Markdown response styling inside assistant bubbles */
+.prose-custom {
+  color: #E0E0E0;
+  line-height: 1.6;
+}
+
+.prose-custom h2 {
+  color: #FFFFFF;
+  font-size: 1.25rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.25rem;
+}
+
+.prose-custom h3 {
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.prose-custom p {
+  margin-bottom: 0.75rem;
+}
+
+.prose-custom ul, .prose-custom ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+}
+
+.prose-custom li {
+  margin-bottom: 0.25rem;
+  list-style-type: disc;
+}
+
+.prose-custom code {
+  background-color: rgba(255,255,255,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.prose-custom blockquote {
+  border-left: 3px solid var(--primary);
+  padding-left: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0.75rem 0;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 0 4px 4px 0;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}

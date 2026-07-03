@@ -5,6 +5,7 @@ frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
+ai-discovery-mvp/.env*
 
 # Python virtual environments and caches
 .venv/
@@ -25,6 +26,10 @@ frontend/.next/
 frontend/out/
 frontend/build/
 frontend/tsconfig.tsbuildinfo
+ai-discovery-mvp/node_modules/
+ai-discovery-mvp/.next/
+ai-discovery-mvp/out/
+ai-discovery-mvp/build/
 node_modules/
 
 # Local databases and analytical caches
