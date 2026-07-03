@@ -23,9 +23,9 @@ export const PERSONAS: Persona[] = [
     rarely_explored_genres: ["Ambient", "Neo Soul", "Jazz", "Dream Pop"],
     recent_listening_patterns: "Loops familiar slow-tempo synth-pop, skipping anything else.",
     suggestedPrompts: [
-      "Give me relaxing music I've probably never heard",
-      "I want hidden gems for a late night wind down",
-      "Something moody, low-tempo, and deep to relax to"
+      "I want relaxing songs I've probably never heard.",
+      "Surprise me with hidden gems for a late-night drive.",
+      "Recommend music for deep work that isn't mainstream."
     ]
   },
   {
@@ -39,9 +39,9 @@ export const PERSONAS: Persona[] = [
     rarely_explored_genres: ["Alternative Hip-Hop", "Experimental", "Electronic (Deep Cuts)", "Neo Soul"],
     recent_listening_patterns: "Replays high-energy dance pop, skipping low-tempo tracks immediately.",
     suggestedPrompts: [
-      "Help me escape my workout playlist",
-      "Give me high-tempo workout beats outside mainstream EDM",
-      "Upbeat driving rhythms that aren't typical pop hits"
+      "Help me escape my music bubble.",
+      "Give me indie artists outside my usual playlist.",
+      "Something like Bon Iver but more upbeat."
     ]
   },
   {
@@ -55,9 +55,9 @@ export const PERSONAS: Persona[] = [
     rarely_explored_genres: ["Indie Rock", "Dream Pop", "Psychedelic R&B", "Experimental"],
     recent_listening_patterns: "Focuses on guitar-based alternative, ignoring electronic or contemporary soul.",
     suggestedPrompts: [
-      "Something like Bon Iver but more upbeat for a rainy commute",
-      "Help me escape my usual listening habits",
-      "Surprise me with obscure indie rock or dream pop gems"
+      "Something like Bon Iver but more upbeat.",
+      "Give me indie artists outside my usual playlist.",
+      "Help me escape my music bubble."
     ]
   },
   {
@@ -71,9 +71,9 @@ export const PERSONAS: Persona[] = [
     rarely_explored_genres: ["Ambient", "Jazz (Contemporary)", "Dream Pop"],
     recent_listening_patterns: "Loops study beats, skipping lyrical songs to avoid distraction.",
     suggestedPrompts: [
-      "I want hidden gems for deep work",
-      "Minimalist instrumental music I haven't heard before",
-      "Relaxing down-tempo soundscapes that won't distract me"
+      "Recommend music for deep work that isn't mainstream.",
+      "I want relaxing songs I've probably never heard.",
+      "Give me indie artists outside my usual playlist."
     ]
   },
   {
@@ -87,9 +87,9 @@ export const PERSONAS: Persona[] = [
     rarely_explored_genres: ["Alternative R&B", "Dream Pop", "Upbeat Indie", "Neo Soul"],
     recent_listening_patterns: "Plays high-tempo nostalgia playlists, skipping quiet/moody tracks.",
     suggestedPrompts: [
-      "Surprise me—but stay close to my taste",
-      "Give me driving anthems outside classic rock",
-      "Upbeat indie and alternative R&B hidden gems for a drive"
+      "Surprise me with hidden gems for a late-night drive.",
+      "Something like Bon Iver but more upbeat.",
+      "Help me escape my music bubble."
     ]
   }
 ];

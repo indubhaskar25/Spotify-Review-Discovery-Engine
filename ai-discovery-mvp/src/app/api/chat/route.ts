@@ -50,9 +50,9 @@ function generateLocalFallbackResponse(
   const picks = selectedRecs.map(t => {
     let reason = "";
     if (selectedMoods.length > 0) {
-      reason = `Compass selected this ${t.genre} track ("${t.title}" by ${t.artist}) because it perfectly captures your desired "${selectedMoods.join(", ")}" mood, aligning with your ${persona?.name || "Explorer"} context while bypassing your usual loop of ${listenerProfile.frequently_replayed}.`;
+      reason = `Matches your desired "${selectedMoods.join(", ")}" mood for ${persona?.name || "unwinding"}. It introduces you to ${t.genre} rhythms, carefully avoiding your skipped soundscapes to expand your taste.`;
     } else {
-      reason = `Compass mapped this ${t.genre} deep-cut to your unexplored target genres, offering a refreshing sound that avoids your skipped patterns.`;
+      reason = `This ${t.genre} gem is selected specifically to expand your music bubble. It features clean melodies that avoid your usual repetition patterns, giving you a fresh focus perspective.`;
     }
     return {
       track_id: t.id,
@@ -63,7 +63,7 @@ function generateLocalFallbackResponse(
   });
 
   return {
-    framing: `${warningMsg}Here are three handpicked discoveries to help you explore outside your comfort zone.`,
+    framing: `${warningMsg}Spotify Compass analyzed your listening profile and found three recommendations that match your mood while helping you explore beyond your usual listening habits.`,
     reasoning: `We bypassed your habit of repeating the same tracks by selecting atmospheric ${selectedRecs[0]?.genre || "Alternative"} and ambient electronic pieces.`,
     picks
   };
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
         adventurousnessVal,
         selectedMoods,
         listenerProfile,
-        "⚠️ [Offline Simulation Mode] "
+        ""
       );
       return NextResponse.json(mockResponse);
     }
@@ -174,6 +174,9 @@ OBJECTIVES:
 7. If the user rejects recommendations ("too familiar", "too slow", "not this vibe"), treat that as new preference data and adapt future recommendations accordingly.
 8. Never explain recommendations using percentages or similarity scores. Instead, explain naturally why each recommendation fits this person's listening intent.
 
+CRITICAL TEXT CONSTRAINT:
+- Keep each recommended track's reason description extremely concise, limited to exactly 2 to 3 sentences. Avoid long descriptions.
+
 PERSONALITY:
 - Friendly, Confident, Curious
 - Feels like a music expert who knows the listener personally (never robotic)
@@ -184,14 +187,14 @@ You MUST return STRICT JSON only. Do not wrap it in markdown backticks or includ
 
 JSON Schema:
 {
-  "framing": "One short conversational sentence introducing the recommendations.",
+  "framing": "Spotify Compass analyzed your listening profile and found three recommendations that match your mood while helping you explore beyond your usual listening habits.",
   "reasoning": "One sentence explaining what changed compared with the listener's normal listening behavior.",
   "picks": [
     {
       "track_id": "Must match one of the track IDs from the MUSIC CATALOG",
       "artist": "Must match the artist of the picked track from the MUSIC CATALOG",
       "title": "Must match the title of the picked track from the MUSIC CATALOG",
-      "reason": "Natural explanation referencing both the user's request and the listener profile."
+      "reason": "Natural explanation referencing both the user's request and the listener profile. Keep it strictly 2 to 3 sentences long."
     },
     {
       "track_id": "...",
@@ -248,6 +251,11 @@ JSON Schema:
         }
       }
 
+      // Enforce the framing text on output
+      if (parsedJson && !parsedJson.framing) {
+        parsedJson.framing = "Spotify Compass analyzed your listening profile and found three recommendations that match your mood while helping you explore beyond your usual listening habits.";
+      }
+
       return NextResponse.json(parsedJson);
     } catch (groqErr: any) {
       console.warn("Groq API call encountered an error. Falling back to local fallback generator.", groqErr);
@@ -256,7 +264,7 @@ JSON Schema:
         adventurousnessVal,
         selectedMoods,
         listenerProfile,
-        "⚠️ [Offline Simulation Mode] "
+        ""
       );
       return NextResponse.json(mockResponse);
     }
