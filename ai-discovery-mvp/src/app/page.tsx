@@ -7,95 +7,65 @@ import {
   Sliders, 
   Tags, 
   RefreshCw, 
-  Database, 
   ArrowRight,
-  TrendingUp,
-  MessageSquare,
-  AlertTriangle,
   Lightbulb,
   Music,
   Compass,
-  CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Clock,
+  ArrowRightLeft,
+  Info,
+  User,
+  Zap,
+  Disc
 } from "lucide-react";
-import { Dataset, backendApi } from "@/lib/api";
+import { PERSONAS, Persona } from "@/lib/personas";
+import { TRACKS, Track } from "@/lib/catalog";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  recommendations?: Recommendation[];
+  recommendations?: RecommendationMatch[];
+  differentiation?: {
+    collaborativeFilteringShortcoming: string;
+    compassReasoning: string;
+  };
 }
 
-interface Recommendation {
-  title: string;
-  description: string;
-  category: string;
-  impact: string;
+interface RecommendationMatch {
+  track: Track;
+  explanation: string;
 }
-
-const DEFAULT_DATASETS: Dataset[] = [
-  { dataset_id: "app_store_20260630_110857_4c70802c", record_count: 30, saved_at: "", has_insights: true },
-  { dataset_id: "play_store_20260630_110855_5d8e1ddd", record_count: 80, saved_at: "", has_insights: true },
-  { dataset_id: "reddit_20260630_110857_7aa47efc", record_count: 3, saved_at: "", has_insights: true },
-  { dataset_id: "forum_20260630_110905_91530b4d", record_count: 2, saved_at: "", has_insights: true }
-];
 
 const MOOD_TAG_OPTIONS = [
-  { id: "indie", label: "Emerging Indie", icon: "🎵" },
-  { id: "study", label: "Study & Focus", icon: "🎧" },
-  { id: "gym", label: "Workout Boost", icon: "💪" },
-  { id: "obscure", label: "Obscure Gems", icon: "🤫" },
-  { id: "complaints", label: "Major Complaints", icon: "🚨" },
-  { id: "personas", label: "User Personas", icon: "👥" }
-];
-
-const SUGGESTED_QUESTIONS = [
-  "Why do users struggle to discover new music?",
-  "What frustrates users most about recommendations and Smart Shuffle?",
-  "Which user segments experience the worst discovery fatigue?",
-  "What unmet needs emerge consistently across reviews?"
+  { id: "mood_chill", label: "Chill & Relaxed", icon: "🍃" },
+  { id: "mood_focus", label: "Deep Focus", icon: "🧠" },
+  { id: "mood_upbeat", label: "Upbeat & High", icon: "⚡" },
+  { id: "mood_obscure", label: "Obscure Indie", icon: "🕵️" },
+  { id: "mood_melancholy", label: "Melancholic", icon: "🌧️" },
+  { id: "mood_experimental", label: "Avant-Garde", icon: "🌀" }
 ];
 
 export default function Home() {
-  const [datasets, setDatasets] = useState<Dataset[]>(DEFAULT_DATASETS);
-  const [selectedDataset, setSelectedDataset] = useState<string>("");
-  const [adventurousness, setAdventurousness] = useState<number>(50);
+  const [selectedPersona, setSelectedPersona] = useState<Persona>(PERSONAS[0]);
+  const [adventurousness, setAdventurousness] = useState<number>(60);
   const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState<string>(selectedPersona.suggestedPrompts[0]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [backendStatus, setBackendStatus] = useState<"connecting" | "connected" | "mock">("connecting");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize and fetch datasets
-  useEffect(() => {
-    async function loadDatasets() {
-      try {
-        const fetched = await backendApi.getDatasets();
-        if (fetched && fetched.length > 0) {
-          setDatasets(fetched);
-          setSelectedDataset(fetched[0].dataset_id);
-          setBackendStatus("connected");
-        } else {
-          setDatasets(DEFAULT_DATASETS);
-          setSelectedDataset(DEFAULT_DATASETS[0].dataset_id);
-          setBackendStatus("mock");
-        }
-      } catch (err) {
-        console.warn("Backend unavailable, running in Mock Mode.", err);
-        setDatasets(DEFAULT_DATASETS);
-        setSelectedDataset(DEFAULT_DATASETS[0].dataset_id);
-        setBackendStatus("mock");
-      }
-    }
-    loadDatasets();
-  }, []);
-
-  // Scroll to bottom on new message
+  // Scroll to bottom on new message or loading state
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Update input text when persona changes to their first suggested prompt
+  const handleSelectPersona = (p: Persona) => {
+    setSelectedPersona(p);
+    setInput(p.suggestedPrompts[0]);
+  };
 
   // Handle Mood tag toggling
   const handleToggleMood = (label: string) => {
@@ -106,8 +76,28 @@ export default function Home() {
     );
   };
 
-  // Helper to parse JSON block and separate markdown text
-  const parseAIResponse = (text: string): { text: string; recommendations: Recommendation[] } => {
+  // Helper to generate consistent abstract album art gradients based on song title
+  const generateAlbumArtStyle = (title: string) => {
+    let hash = 0;
+    for (let i = 0; i < title.length; i++) {
+      hash = title.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h1 = Math.abs(hash % 360);
+    const h2 = Math.abs((hash + 140) % 360);
+    return {
+      background: `linear-gradient(135deg, hsl(${h1}, 75%, 45%) 0%, hsl(${h2}, 85%, 15%) 100%)`,
+    };
+  };
+
+  // Helper to parse JSON block and separate markdown text and recommendations
+  const parseAIResponse = (text: string): { 
+    text: string; 
+    recommendations: RecommendationMatch[];
+    differentiation?: {
+      collaborativeFilteringShortcoming: string;
+      compassReasoning: string;
+    };
+  } => {
     const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
     const match = text.match(jsonRegex);
     
@@ -115,12 +105,29 @@ export default function Home() {
       try {
         const parsedJson = JSON.parse(match[1].trim());
         const cleanText = text.replace(jsonRegex, "").trim();
+        
+        // Match recommended track IDs with the actual Tracks catalog
+        const recList: RecommendationMatch[] = [];
+        if (parsedJson.recommendations && Array.isArray(parsedJson.recommendations)) {
+          parsedJson.recommendations.forEach((item: any) => {
+            const trackId = item.trackId;
+            const matchedTrack = TRACKS.find(t => t.id === trackId);
+            if (matchedTrack) {
+              recList.push({
+                track: matchedTrack,
+                explanation: item.explanation || item.description || "Matches your target profile."
+              });
+            }
+          });
+        }
+
         return {
           text: cleanText,
-          recommendations: parsedJson.recommendations || [],
+          recommendations: recList,
+          differentiation: parsedJson.differentiation
         };
       } catch (e) {
-        console.error("Failed to parse JSON from response:", e);
+        console.error("Failed to parse JSON from AI response:", e);
       }
     }
     
@@ -152,14 +159,14 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: history,
-          datasetId: selectedDataset,
+          persona: selectedPersona,
           adventurousness,
           moodTags: selectedMoods,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`Chat API error: ${response.status}`);
+        throw new Error(`Compass API error: ${response.status}`);
       }
 
       const data = await response.json();
@@ -171,7 +178,8 @@ export default function Home() {
           id: Math.random().toString(),
           role: "assistant",
           content: parsed.text,
-          recommendations: parsed.recommendations
+          recommendations: parsed.recommendations,
+          differentiation: parsed.differentiation
         }
       ]);
     } catch (err: any) {
@@ -181,7 +189,7 @@ export default function Home() {
         {
           id: Math.random().toString(),
           role: "assistant",
-          content: `⚠️ **Connection Error**\n\nFailed to reach the AI Discovery Assistant API route. Please ensure that \`GROQ_API_KEY\` is configured in Vercel settings and the FastAPI backend is running.\n\n*Error details: ${err.message || err}*`,
+          content: `⚠️ **Compass Connection Error**\n\nFailed to reach the Spotify Compass server. Ensure that \`GROQ_API_KEY\` is configured in your Vercel deployment variables.\n\n*Error details: ${err.message || err}*`,
         }
       ]);
     } finally {
@@ -192,11 +200,12 @@ export default function Home() {
   // Reset Chat and settings
   const handleReset = () => {
     setMessages([]);
-    setAdventurousness(50);
+    setAdventurousness(60);
     setSelectedMoods([]);
+    setInput(selectedPersona.suggestedPrompts[0]);
   };
 
-  // Render markdown text to clean paragraph/headers
+  // Render markdown text inside chat bubbles
   const renderMessageContent = (content: string) => {
     return content.split("\n\n").map((paragraph, index) => {
       const trimmed = paragraph.trim();
@@ -204,34 +213,33 @@ export default function Home() {
 
       // Header 2
       if (trimmed.startsWith("## ")) {
-        return <h2 key={index} className="text-white text-lg font-semibold mt-4 mb-2 border-b border-zinc-800 pb-1">{trimmed.replace("## ", "")}</h2>;
+        return <h2 key={index} className="text-white text-base font-semibold mt-4 mb-1.5 border-b border-zinc-800 pb-1">{trimmed.replace("## ", "")}</h2>;
       }
       // Header 3
       if (trimmed.startsWith("### ")) {
-        return <h3 key={index} className="text-white text-md font-semibold mt-3 mb-1">{trimmed.replace("### ", "")}</h3>;
+        return <h3 key={index} className="text-white text-sm font-semibold mt-3 mb-1">{trimmed.replace("### ", "")}</h3>;
       }
-      // Blockquote
-      if (trimmed.startsWith("> ")) {
-        return (
-          <blockquote key={index} className="border-l-3 border-emerald-500 pl-3 italic text-zinc-400 bg-zinc-900/30 py-1 rounded-r-md my-2">
-            {trimmed.replace("> ", "")}
-          </blockquote>
-        );
-      }
-      // Lists
+      // Bullet list
       if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
         return (
           <ul key={index} className="list-disc pl-5 mb-2 text-zinc-300 space-y-1">
             {trimmed.split("\n").map((item, idx) => (
-              <li key={idx}>{item.replace(/^[*|-]\s+/, "")}</li>
+              <li key={idx} className="text-xs">{item.replace(/^[*|-]\s+/, "")}</li>
             ))}
           </ul>
+        );
+      }
+      // Blockquote
+      if (trimmed.startsWith("> ")) {
+        return (
+          <blockquote key={index} className="border-l-2 border-emerald-500 pl-3 italic text-zinc-400 bg-zinc-900/30 py-1 rounded-r-md my-2 text-xs">
+            {trimmed.replace("> ", "")}
+          </blockquote>
         );
       }
 
       // Inline formatting helper
       const formatInline = (txt: string) => {
-        // Simple bold parser
         const parts = txt.split(/(\*\*.*?\*\*)/g);
         return parts.map((part, i) => {
           if (part.startsWith("**") && part.endsWith("**")) {
@@ -241,15 +249,31 @@ export default function Home() {
         });
       };
 
-      return <p key={index} className="text-zinc-300 mb-2 leading-relaxed">{formatInline(trimmed)}</p>;
+      return <p key={index} className="text-zinc-300 mb-2 leading-relaxed text-xs sm:text-sm">{formatInline(trimmed)}</p>;
     });
   };
 
-  // Get adventurousness label
+  // Slider adventurousness label mapping
   const getAdventurousnessLabel = () => {
-    if (adventurousness < 35) return { text: "Mainstream & Safe", color: "text-emerald-500", desc: "Focuses on popular recommendations & high-satisfaction features." };
-    if (adventurousness <= 70) return { text: "Balanced Discovery", color: "text-amber-500", desc: "Mixes mainstream content with emerging features & complaints." };
-    return { text: "Wild & Unexplored", color: "text-rose-500", desc: "Deep dive into raw user complaints, niche genres & emerging indie feedback." };
+    if (adventurousness < 35) {
+      return { 
+        text: "Safe & Familiar", 
+        color: "text-emerald-500", 
+        desc: "Stays within familiar boundaries, prioritizing mainstream catalog gems." 
+      };
+    }
+    if (adventurousness <= 70) {
+      return { 
+        text: "Balanced Discovery", 
+        color: "text-amber-500", 
+        desc: "Mixes close-matching tunes with several unexplored genre tracks." 
+      };
+    }
+    return { 
+      text: "Wild & Obscure", 
+      color: "text-rose-500", 
+      desc: "Maximum deviation. Selects the most obscure indie, experimental, and world tracks." 
+    };
   };
 
   const currentSliderLabel = getAdventurousnessLabel();
@@ -258,72 +282,91 @@ export default function Home() {
     <div className="flex h-screen w-screen bg-[#121212] text-white overflow-hidden flex-col md:flex-row">
       
       {/* Sidebar Controls */}
-      <aside className="w-full md:w-[360px] bg-[#191919] border-b md:border-b-0 md:border-r border-[#2A2A2A] flex flex-col shrink-0 overflow-y-auto">
+      <aside className="w-full md:w-[380px] bg-[#171717] border-b md:border-b-0 md:border-r border-[#2A2A2A] flex flex-col shrink-0 overflow-y-auto z-20 shadow-2xl">
         
-        {/* Sidebar Brand Header */}
-        <div className="p-6 border-b border-[#2A2A2A]">
+        {/* Brand Header */}
+        <div className="p-6 border-b border-[#2A2A2A] bg-[#121212]/80 backdrop-blur">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/10">
-              <Compass className="h-5 w-5 text-black" />
+            <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <Compass className="h-5.5 w-5.5 text-black" />
             </div>
             <div>
-              <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
-                Discovery AI
-                <span className="text-[10px] bg-[#2A2A2A] text-emerald-400 font-medium px-2 py-0.5 rounded-full border border-emerald-500/20">MVP</span>
+              <h1 className="text-xl font-extrabold tracking-tight flex items-center gap-2 font-display">
+                Spotify Compass
               </h1>
-              <p className="text-xs text-zinc-400">Conversational strategic intelligence</p>
+              <p className="text-[11px] text-zinc-400 font-medium">AI Music Discovery Companion</p>
             </div>
           </div>
-
-          {/* Backend Status indicator */}
-          <div className="mt-4 flex items-center justify-between bg-[#121212] px-3 py-2 rounded-lg border border-[#2a2a2a] text-xs">
-            <span className="text-zinc-400 flex items-center gap-1.5">
-              <Database className="h-3.5 w-3.5" /> Source DB:
-            </span>
-            {backendStatus === "connecting" && (
-              <span className="flex items-center gap-1 text-zinc-500">
-                <span className="h-2 w-2 rounded-full bg-zinc-500 animate-pulse" /> Connecting...
-              </span>
-            )}
-            {backendStatus === "connected" && (
-              <span className="flex items-center gap-1 text-emerald-500">
-                <span className="h-2 w-2 rounded-full bg-emerald-500" /> Railway Live
-              </span>
-            )}
-            {backendStatus === "mock" && (
-              <span className="flex items-center gap-1 text-amber-500">
-                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" /> Local Mock
-              </span>
-            )}
-          </div>
+          <p className="text-xs text-zinc-400 mt-2.5 italic">
+            \"Find your next favorite song—not just another familiar one.\"
+          </p>
         </div>
 
         {/* Configurations panel */}
         <div className="p-6 space-y-6 flex-1">
           
-          {/* Dataset Selector */}
+          {/* Persona Selector */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-              <Database className="h-4 w-4 text-emerald-500" /> Select Review Corpus
+            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <User className="h-3.5 w-3.5 text-emerald-500" /> Active Listener Profile
             </label>
-            <select 
-              value={selectedDataset}
-              onChange={(e) => setSelectedDataset(e.target.value)}
-              className="w-full bg-[#121212] border border-[#2A2A2A] rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-emerald-500 transition-colors"
-            >
-              {datasets.map((d) => (
-                <option key={d.dataset_id} value={d.dataset_id}>
-                  {d.dataset_id.split("_")[0].toUpperCase()} Reviews ({d.record_count} items)
-                </option>
-              ))}
-            </select>
+            <div className="grid grid-cols-1 gap-1.5">
+              {PERSONAS.map((p) => {
+                const isSelected = selectedPersona.id === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelectPersona(p)}
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left ${
+                      isSelected 
+                        ? "bg-emerald-500/10 border-emerald-500 text-white shadow-lg shadow-emerald-500/5" 
+                        : "border-[#2A2A2A] bg-[#121212]/50 text-zinc-400 hover:border-zinc-700 hover:bg-[#121212] hover:text-zinc-200"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{p.icon}</span>
+                      <div>
+                        <h4 className="text-xs font-bold">{p.name}</h4>
+                        <p className="text-[10px] text-zinc-400">{p.tagline}</p>
+                      </div>
+                    </div>
+                    {isSelected && <span className="h-2 w-2 rounded-full bg-emerald-500" />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Persona Constraints Context Card */}
+          <div className="bg-[#121212] p-4 rounded-xl border border-[#2A2A2A] space-y-3">
+            <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <Zap className="h-3.5 w-3.5 text-emerald-500" /> User Profile Context
+            </h4>
+            <div className="space-y-2 text-xs">
+              <div>
+                <span className="text-zinc-500 font-semibold block text-[10px]">REPLAY TENDENCY:</span>
+                <span className="text-zinc-300">{selectedPersona.replayTendencies}</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 font-semibold block text-[10px]">SKIPPED PATTERNS:</span>
+                <span className="text-zinc-300">{selectedPersona.skippedMusic}</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 font-semibold block text-[10px]">UNEXPLORED GENRES:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {selectedPersona.unexploredGenres.map(g => (
+                    <span key={g} className="text-[9px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded border border-zinc-700">{g}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Adventurousness Slider */}
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <Sliders className="h-4 w-4 text-emerald-500" /> Adventurousness
+              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                <Sliders className="h-3.5 w-3.5 text-emerald-500" /> Exploration Goal
               </label>
               <span className="text-xs font-bold bg-[#2A2A2A] px-2 py-0.5 rounded text-emerald-400 border border-emerald-500/10">
                 {adventurousness}%
@@ -353,8 +396,8 @@ export default function Home() {
 
           {/* Mood / Context Tags */}
           <div className="space-y-3">
-            <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-              <Tags className="h-4 w-4 text-emerald-500" /> Context Mood Tags
+            <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+              <Tags className="h-3.5 w-3.5 text-emerald-500" /> Context Vibe Tags
             </label>
             <div className="grid grid-cols-2 gap-2">
               {MOOD_TAG_OPTIONS.map((tag) => {
@@ -366,7 +409,7 @@ export default function Home() {
                     className={`flex items-center gap-1.5 px-3 py-2 text-xs font-medium border rounded-lg transition-all duration-200 text-left ${
                       isActive 
                         ? "mood-tag-active border-emerald-500 text-white" 
-                        : "border-[#2A2A2A] bg-[#121212] text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                        : "border-[#2A2A2A] bg-[#121212]/50 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
                     }`}
                   >
                     <span>{tag.icon}</span>
@@ -384,76 +427,83 @@ export default function Home() {
             onClick={handleReset}
             className="w-full bg-transparent border border-[#2A2A2A] hover:bg-[#2A2A2A] text-zinc-300 py-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all"
           >
-            <RefreshCw className="h-3.5 w-3.5" /> Reset Configuration
+            <RefreshCw className="h-3.5 w-3.5" /> Clear & Reset
           </button>
         </div>
       </aside>
 
       {/* Main Conversational Workspace */}
-      <main className="flex-1 flex flex-col bg-[#121212] relative overflow-hidden">
+      <main className="flex-1 flex flex-col bg-[#121212] relative overflow-hidden h-full">
         
         {/* Chat Header */}
-        <header className="h-16 border-b border-[#2A2A2A] flex items-center justify-between px-6 bg-[#191919]/80 backdrop-blur-md z-10">
+        <header className="h-16 border-b border-[#2A2A2A] flex items-center justify-between px-6 bg-[#171717] z-10 shadow-md shrink-0">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-emerald-500" />
-            <h2 className="text-sm font-semibold">Conversational Discovery Workspace</h2>
+            <Sparkles className="h-4.5 w-4.5 text-emerald-500" />
+            <h2 className="text-sm font-semibold font-display">Compass Interactive Discovery</h2>
           </div>
-          <div className="text-xs text-zinc-400 font-mono">
-            Model: <span className="text-emerald-400 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">llama-3.1-8b</span>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] text-zinc-400 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded flex items-center gap-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Catalog size: {TRACKS.length}
+            </span>
           </div>
         </header>
 
         {/* Message Panel */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {messages.length === 0 ? (
-            <div className="max-w-2xl mx-auto py-12 space-y-8 animate-fade-in">
+            <div className="max-w-2xl mx-auto py-8 space-y-8 animate-fade-in">
+              
+              {/* Product Hero */}
               <div className="text-center space-y-3">
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 mb-2 border border-emerald-500/20 shadow-inner">
                   <Compass className="h-6 w-6" />
                 </div>
-                <h3 className="text-2xl font-bold tracking-tight">AI Discovery Assistant</h3>
-                <p className="text-zinc-400 text-sm max-w-md mx-auto">
-                  Ask conversational questions to explore Spotify review feedback. Adjust the sliders and tags in the sidebar to shape how the AI sources recommendations.
+                <h3 className="text-2xl font-black tracking-tight font-display">How can Spotify Compass help?</h3>
+                <p className="text-zinc-400 text-xs sm:text-sm max-w-md mx-auto">
+                  By matching your custom context (activity, vibe, adventurousness) to a catalog of 45+ deep-cuts, Compass escapes the collaborative filtering bubble.
                 </p>
               </div>
 
-              {/* Suggestions Grid */}
+              {/* Suggested Questions (Rainy commute, etc.) */}
               <div className="space-y-3">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                  <HelpCircle className="h-4 w-4 text-emerald-500" /> Suggested Questions
+                <h4 className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                  <HelpCircle className="h-4 w-4 text-emerald-500" /> Suggested Prompts for {selectedPersona.name}
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {SUGGESTED_QUESTIONS.map((question, i) => (
+                <div className="grid grid-cols-1 gap-2.5">
+                  {selectedPersona.suggestedPrompts.map((question, i) => (
                     <button
                       key={i}
                       onClick={() => handleSendMessage(question)}
-                      className="text-left bg-[#191919] border border-[#2A2A2A] hover:border-emerald-500/50 hover:bg-[#222222] p-4 rounded-xl transition-all duration-300 group flex items-start justify-between gap-3 shadow-md shadow-black/10"
+                      className="text-left bg-[#171717] border border-[#2A2A2A] hover:border-emerald-500/40 hover:bg-[#222222] p-4 rounded-xl transition-all duration-300 group flex items-center justify-between gap-3 shadow-lg hover:-translate-y-0.5"
                     >
-                      <span className="text-sm text-zinc-200 group-hover:text-white leading-normal font-medium">{question}</span>
-                      <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0 mt-0.5" />
+                      <span className="text-xs sm:text-sm text-zinc-300 group-hover:text-white leading-normal font-medium">{question}</span>
+                      <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all shrink-0" />
                     </button>
                   ))}
+                  {/* General Escaping habits prompt */}
+                  <button
+                    onClick={() => handleSendMessage("Help me escape my usual listening habits")}
+                    className="text-left bg-[#171717] border border-[#2A2A2A] hover:border-[#E91429]/40 hover:bg-[#222222] p-4 rounded-xl transition-all duration-300 group flex items-center justify-between gap-3 shadow-lg"
+                  >
+                    <span className="text-xs sm:text-sm text-zinc-300 group-hover:text-white leading-normal font-medium">Help me escape my usual listening habits</span>
+                    <ArrowRight className="h-4 w-4 text-zinc-500 group-hover:text-[#E91429] group-hover:translate-x-1 transition-all shrink-0" />
+                  </button>
                 </div>
               </div>
 
-              {/* Features List */}
-              <div className="bg-[#191919] p-4 rounded-xl border border-[#2A2A2A] grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                    <Sliders className="h-4 w-4" />
+              {/* Differentiation callout info box */}
+              <div className="bg-[#171717]/80 p-5 rounded-2xl border border-[#2A2A2A] space-y-3 shadow-md">
+                <h5 className="text-xs font-bold text-white flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-emerald-500" /> Why this isn't Collaborative Filtering
+                </h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[11px] text-zinc-400 leading-relaxed">
+                  <div className="bg-[#121212] p-3 rounded-lg border border-[#2A2A2A]">
+                    <span className="text-[9px] font-bold text-[#E91429] block mb-1">TRADITIONAL ALGORITHMS</span>
+                    Looks at what similar users played. Repeats mainstream hits and loops your recent history, reinforcing bubble habits.
                   </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-white mb-0.5">Adventurousness Slider</h5>
-                    <p className="text-[11px] text-zinc-400">Pushes responses from low-risk mainstream insights to critical, emerging indie feedback.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-                    <Tags className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <h5 className="text-xs font-bold text-white mb-0.5">Context Mood Filtering</h5>
-                    <p className="text-[11px] text-zinc-400">Embeds specific vibes (study, workout, indie) directly into recommendation routing.</p>
+                  <div className="bg-[#121212] p-3 rounded-lg border border-[#2A2A2A]">
+                    <span className="text-[9px] font-bold text-emerald-400 block mb-1">SPOTIFY COMPASS WAY</span>
+                    Reads your active intent, skips loop habits, checks negative signals, and navigates you to unexplored catalog terrain.
                   </div>
                 </div>
               </div>
@@ -463,43 +513,90 @@ export default function Home() {
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"} animate-slide-up`}>
                   
-                  {/* Sender Name */}
-                  <span className="text-[10px] text-zinc-500 font-semibold mb-1 px-1 tracking-wider uppercase">
-                    {msg.role === "user" ? "You" : "Discovery Assistant"}
+                  {/* Sender Header */}
+                  <span className="text-[9px] text-zinc-500 font-bold mb-1 px-1 tracking-wider uppercase flex items-center gap-1.5">
+                    {msg.role === "user" ? (
+                      <>👤 {selectedPersona.name}</>
+                    ) : (
+                      <>🧭 Spotify Compass</>
+                    )}
                   </span>
                   
-                  {/* Speech bubble */}
+                  {/* Message Bubble */}
                   <div className={`p-5 max-w-[85%] ${msg.role === "user" ? "chat-bubble-user" : "chat-bubble-assistant"}`}>
                     <div className="prose-custom text-sm">
                       {renderMessageContent(msg.content)}
                     </div>
                   </div>
 
-                  {/* Recommendation Cards */}
+                  {/* Differentiation details panel */}
+                  {msg.differentiation && (
+                    <div className="mt-3 w-full max-w-[85%] bg-[#171717] rounded-xl border border-zinc-800 p-4 space-y-2.5 shadow-lg animate-slide-up">
+                      <div className="flex items-center gap-2 border-b border-zinc-800 pb-1.5">
+                        <ArrowRightLeft className="h-3.5 w-3.5 text-emerald-500" />
+                        <h4 className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Algorithmic Compass Reasoning</h4>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div className="bg-[#121212] p-2.5 rounded border border-zinc-800">
+                          <span className="text-[9px] font-bold text-rose-500 block mb-1">COLLABORATIVE FILTERING SHORCOMING</span>
+                          <p className="text-zinc-400 text-[11px] leading-relaxed">
+                            {msg.differentiation.collaborativeFilteringShortcoming}
+                          </p>
+                        </div>
+                        <div className="bg-[#121212] p-2.5 rounded border border-zinc-800">
+                          <span className="text-[9px] font-bold text-emerald-400 block mb-1">SPOTIFY COMPASS RESOLUTION</span>
+                          <p className="text-zinc-400 text-[11px] leading-relaxed">
+                            {msg.differentiation.compassReasoning}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Recommendations Song Cards Grid */}
                   {msg.recommendations && msg.recommendations.length > 0 && (
                     <div className="mt-4 w-full grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-[90%]">
                       {msg.recommendations.map((rec, rIdx) => (
                         <div 
                           key={rIdx} 
-                          className="bg-[#191919] border border-emerald-500/20 hover:border-emerald-500/60 p-4 rounded-xl transition-all duration-300 shadow-lg relative group flex flex-col justify-between"
+                          className="bg-[#171717] border border-zinc-800 hover:border-emerald-500/40 p-4 rounded-xl transition-all duration-300 shadow-xl group flex flex-col"
                         >
-                          <div>
-                            <div className="flex justify-between items-start gap-2 mb-2">
-                              <span className="text-[10px] uppercase font-bold tracking-wider bg-emerald-950/60 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/10">
-                                {rec.category}
-                              </span>
-                              <span className={`text-[10px] font-bold ${
-                                rec.impact === "High" ? "text-emerald-400 bg-emerald-950/20 px-1.5 py-0.5 rounded" : "text-amber-400 bg-amber-950/20 px-1.5 py-0.5 rounded"
-                              }`}>
-                                {rec.impact} Impact
-                              </span>
+                          <div className="flex gap-4">
+                            {/* Dynamically colored abstract Album Art */}
+                            <div 
+                              style={generateAlbumArtStyle(rec.track.title)} 
+                              className="h-16 w-16 rounded-lg flex items-center justify-center shrink-0 shadow-lg relative overflow-hidden group-hover:scale-105 transition-transform duration-300"
+                            >
+                              <div className="absolute inset-0 bg-black/10 mix-blend-overlay" />
+                              <Disc className="h-7 w-7 text-white/70 animate-spin-slow" style={{ animationDuration: "12s" }} />
                             </div>
-                            <h4 className="text-sm font-semibold text-white mb-1.5 group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
-                              <Lightbulb className="h-4 w-4 text-emerald-500" />
-                              {rec.title}
-                            </h4>
-                            <p className="text-xs text-zinc-400 leading-normal">
-                              {rec.description}
+
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-sm font-extrabold text-white truncate group-hover:text-emerald-400 transition-colors">
+                                {rec.track.title}
+                              </h4>
+                              <p className="text-xs text-zinc-300 font-medium truncate mt-0.5">
+                                {rec.track.artist}
+                              </p>
+                              
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                <span className="text-[9px] font-bold uppercase bg-zinc-800 text-zinc-300 px-1.5 py-0.5 rounded border border-zinc-700">
+                                  {rec.track.genre}
+                                </span>
+                                <span className="text-[9px] font-semibold bg-emerald-950/40 text-emerald-400 px-1.5 py-0.5 rounded">
+                                  {rec.track.popularity < 45 ? "🔥 Deep Cut" : "⭐ Hidden Gem"}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Pick explanation */}
+                          <div className="mt-3.5 pt-3 border-t border-zinc-800/80 flex-1">
+                            <h5 className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5 mb-1">
+                              <Lightbulb className="h-3 w-3" /> Why Compass Picked This
+                            </h5>
+                            <p className="text-[11px] text-zinc-400 leading-normal">
+                              {rec.explanation}
                             </p>
                           </div>
                         </div>
@@ -509,13 +606,14 @@ export default function Home() {
                 </div>
               ))}
 
-              {/* Loading State bubble */}
+              {/* Loading bubble with rotating spinner */}
               {loading && (
                 <div className="flex flex-col items-start animate-pulse">
-                  <span className="text-[10px] text-zinc-500 font-semibold mb-1 uppercase tracking-wider">Discovery Assistant</span>
+                  <span className="text-[9px] text-zinc-500 font-bold mb-1 uppercase tracking-wider">Compass AI</span>
                   <div className="chat-bubble-assistant p-4 flex items-center gap-2">
-                    <span className="text-xs text-zinc-400 flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-emerald-500 animate-spin" /> Analyzing reviews & generating recommendations...
+                    <Sparkles className="h-4 w-4 text-emerald-500 animate-spin" />
+                    <span className="text-xs text-zinc-400 font-medium">
+                      Compiling taste profile, reviewing negative tags, and filtering catalog...
                     </span>
                   </div>
                 </div>
@@ -526,8 +624,8 @@ export default function Home() {
           )}
         </div>
 
-        {/* Input Bar area */}
-        <footer className="p-4 border-t border-[#2A2A2A] bg-[#191919]/50 backdrop-blur-sm">
+        {/* Input area */}
+        <footer className="p-4 border-t border-[#2A2A2A] bg-[#171717] shrink-0">
           <div className="max-w-3xl mx-auto relative">
             
             {/* active tags ribbon */}
@@ -559,14 +657,14 @@ export default function Home() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about emerging artists, Smart Shuffle loopholes, or study vibe playlists..."
+                placeholder="Ask about recommendations, moods, or search music..."
                 disabled={loading}
-                className="flex-1 bg-[#121212] border border-[#2A2A2A] focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30 transition-all disabled:opacity-50"
+                className="flex-1 bg-[#121212] border border-[#2A2A2A] focus:border-emerald-500 rounded-xl px-4 py-3 text-xs sm:text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-emerald-500/30 transition-all disabled:opacity-50"
               />
               <button
                 type="submit"
                 disabled={loading || !input.trim()}
-                className="bg-emerald-500 hover:bg-emerald-400 text-black h-11 w-11 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-40 disabled:hover:bg-emerald-500"
+                className="bg-emerald-500 hover:bg-emerald-400 text-black h-11 w-11 rounded-xl flex items-center justify-center transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-40"
               >
                 <Send className="h-4 w-4" />
               </button>
