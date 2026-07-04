@@ -191,6 +191,13 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 4px 12px rgba(29, 185, 84, 0.2);
 }
 
+.chat-bubble-user,
+.chat-bubble-user p,
+.chat-bubble-user span,
+.chat-bubble-user strong {
+  color: #ffffff !important;
+}
+
 .chat-bubble-assistant {
   background-color: var(--bubble-assistant-bg);
   color: var(--bubble-assistant-text);
