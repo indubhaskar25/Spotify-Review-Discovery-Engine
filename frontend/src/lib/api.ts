@@ -127,6 +127,21 @@ export const api = {
       method: "POST",
       body: JSON.stringify(params),
     }),
+
+  refreshStats: () => apiFetch<{
+    last_updated: string;
+    new_reviews_added: number;
+    total_reviews: number;
+    status: string;
+    app_store_count: number;
+    play_store_count: number;
+    reddit_count: number;
+    forum_count: number;
+  }>("/api/refresh/stats"),
+
+  triggerRefresh: () => apiFetch<{ status: string; message: string }>("/api/refresh", {
+    method: "POST"
+  }),
 };
 
 export interface SearchResult {

@@ -130,6 +130,11 @@ def on_startup() -> None:
     # 2. Spawning heavy database initialization in a background thread to prevent start timeout
     print("[Startup] Spawning database initialization task in the background...")
     threading.Thread(target=_run_initialization_in_background, args=(settings,), daemon=True).start()
+    
+    # 3. Start background weekly scheduler checker
+    from src.pipeline.refresh_pipeline import start_scheduler
+    start_scheduler()
+
     print("[Startup] Server started and listening. Initialization is running in the background.")
 
 # ──────────────────────────────────────────────
@@ -368,4 +373,19 @@ def search_reviews(req: SearchRequest) -> list[dict[str, Any]]:
     except Exception as exc:
         logger.error("Search failed: %s", exc)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.post("/api/refresh")
+def trigger_refresh() -> dict[str, str]:
+    """Trigger manual refresh of reviews."""
+    from src.pipeline.refresh_pipeline import run_refresh_pipeline
+    return run_refresh_pipeline()
+
+
+@app.get("/api/refresh/stats")
+def get_refresh_status() -> dict[str, Any]:
+    """Get the current refresh statistics and status."""
+    from src.pipeline.refresh_pipeline import load_refresh_stats
+    return load_refresh_stats()
+
 

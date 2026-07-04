@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { Calendar, Download, Sparkles } from "lucide-react";
+import { Calendar, Download, Sparkles, RefreshCw, CheckCircle2, Loader2 } from "lucide-react";
 import { api, type Dataset, type InsightReport, getCorpusStats, type CorpusStats } from "../lib/api";
 
 export default function Overview() {
@@ -16,6 +16,34 @@ export default function Overview() {
     total: 1256,
     latestId: ""
   });
+  const [refreshStats, setRefreshStats] = useState<{
+    last_updated: string;
+    new_reviews_added: number;
+    total_reviews: number;
+    status: string;
+    app_store_count: number;
+    play_store_count: number;
+    reddit_count: number;
+    forum_count: number;
+  } | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadStats = () => {
+    api.refreshStats()
+      .then((stats) => {
+        setRefreshStats(stats);
+        setRefreshing(stats.status === "refreshing");
+        setCorpusStats({
+          appStore: stats.app_store_count,
+          playStore: stats.play_store_count,
+          reddit: stats.reddit_count,
+          forum: stats.forum_count,
+          total: stats.total_reviews,
+          latestId: stats.total_reviews > 1256 ? "app_store_20260630_110857_4c70802c" : corpusStats.latestId
+        });
+      })
+      .catch((e) => console.error("Failed loading refresh stats", e));
+  };
 
   useEffect(() => {
     const today = new Date();
@@ -42,7 +70,64 @@ export default function Overview() {
       })
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
+    loadStats();
   }, []);
+
+  // Poll refresh status and reload insights when a refresh cycle finishes
+  useEffect(() => {
+    const isRefreshing = refreshing || (refreshStats && refreshStats.status === "refreshing");
+    const interval = setInterval(() => {
+      api.refreshStats()
+        .then((stats) => {
+          const wasRefreshing = refreshStats?.status === "refreshing";
+          setRefreshStats(stats);
+          setRefreshing(stats.status === "refreshing");
+          
+          setCorpusStats(prev => ({
+            ...prev,
+            appStore: stats.app_store_count,
+            playStore: stats.play_store_count,
+            reddit: stats.reddit_count,
+            forum: stats.forum_count,
+            total: stats.total_reviews
+          }));
+
+          if (wasRefreshing && stats.status === "idle") {
+            setLoading(true);
+            api.datasets()
+              .then((ds) => {
+                if (ds.length > 0) {
+                  const s = getCorpusStats(ds);
+                  return api.insights(s.latestId, true);
+                } else {
+                  throw new Error("No processed review datasets found.");
+                }
+              })
+              .then((rep) => {
+                setReport(rep);
+              })
+              .catch((e) => setError(String(e)))
+              .finally(() => setLoading(false));
+          }
+        })
+        .catch((e) => console.error("Error polling refresh stats", e));
+    }, isRefreshing ? 3000 : 30000);
+
+    return () => clearInterval(interval);
+  }, [refreshing, refreshStats]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    api.triggerRefresh()
+      .then(() => {
+        loadStats();
+      })
+      .catch((e) => {
+        console.error(e);
+        setRefreshing(false);
+      });
+  };
+
 
   const handleExport = () => {
     if (!report) return;
@@ -122,6 +207,43 @@ export default function Overview() {
 
         {/* Action Widgets */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          {/* Status Indicator */}
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--bg-card)", border: "1px solid var(--border)", padding: "10px 16px", borderRadius: "var(--radius-md)", fontSize: "13px", fontWeight: 600, color: refreshing ? "#f59e0b" : "#10b981" }}>
+            {refreshing ? (
+              <>
+                <Loader2 size={14} className="animate-spin" style={{ color: "#f59e0b" }} />
+                <span>Refresh in progress</span>
+              </>
+            ) : (
+              <>
+                <CheckCircle2 size={14} style={{ color: "#10b981" }} />
+                <span>Data is up to date</span>
+              </>
+            )}
+          </div>
+
+          {/* Refresh Reviews Button */}
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              gap: "8px", 
+              background: refreshing ? "var(--border)" : "var(--green)", 
+              border: "none", 
+              padding: "10px 16px", 
+              borderRadius: "var(--radius-md)", 
+              fontSize: "13px", 
+              fontWeight: 700, 
+              color: refreshing ? "var(--text-muted)" : "#121212", 
+              cursor: refreshing ? "not-allowed" : "pointer" 
+            }}
+          >
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+            <span>Refresh Reviews</span>
+          </button>
+
           {/* Date range */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--bg-card)", border: "1px solid var(--border)", padding: "10px 16px", borderRadius: "var(--radius-md)", fontSize: "13px", fontWeight: 600, color: "var(--text-muted)" }}>
             <Calendar size={14} />
@@ -150,15 +272,54 @@ export default function Overview() {
 
       {report && (
         <>
-          {/* Row of 4 Discovery KPI Cards */}
+          {/* Row of 6 Discovery KPI Cards */}
           <div className="metrics-grid">
             <div className="metric-card">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
-                <span className="metric-label">Reviews Analyzed</span>
+                <span className="metric-label">Total Reviews</span>
                 <span className="badge badge-low" style={{ background: "rgba(59,130,246,0.1)", color: "#3b82f6", border: "1px solid rgba(59,130,246,0.2)" }}>Verified</span>
               </div>
-              <span className="metric-value">{displayReviewsCount.toLocaleString()} Reviews</span>
+              <span className="metric-value">{displayReviewsCount.toLocaleString()}</span>
               <span className="metric-sub" style={{ color: "var(--green)" }}>Combined review corpus</span>
+            </div>
+
+            <div className="metric-card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                <span className="metric-label">Last Updated</span>
+                <span className="badge badge-low" style={{ background: "rgba(16,185,129,0.1)", color: "#10b981", border: "1px solid rgba(16,185,129,0.2)" }}>Auto</span>
+              </div>
+              <span className="metric-value" style={{ fontSize: "14px", marginTop: "6px", marginBottom: "6px", display: "block" }}>
+                {refreshStats ? (
+                  refreshStats.last_updated ? (
+                    (() => {
+                      try {
+                        const date = new Date(refreshStats.last_updated);
+                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        const month = months[date.getUTCMonth()];
+                        const day = date.getUTCDate();
+                        const year = date.getUTCFullYear();
+                        const hours = date.getUTCHours().toString().padStart(2, "0");
+                        const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+                        return `${month} ${day}, ${year} • ${hours}:${minutes} UTC`;
+                      } catch (e) {
+                        return refreshStats.last_updated;
+                      }
+                    })()
+                  ) : "Never"
+                ) : "Loading..."}
+              </span>
+              <span className="metric-sub">Scheduled weekly refresh</span>
+            </div>
+
+            <div className="metric-card">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                <span className="metric-label">New Reviews Added</span>
+                <span className="badge badge-low" style={{ background: "rgba(245,158,11,0.1)", color: "#f59e0b", border: "1px solid rgba(245,158,11,0.2)" }}>Weekly</span>
+              </div>
+              <span className="metric-value" style={{ color: "var(--green)" }}>
+                +{refreshStats?.new_reviews_added || 0} this week
+              </span>
+              <span className="metric-sub">Added during latest refresh</span>
             </div>
 
             <div className="metric-card">
@@ -175,7 +336,7 @@ export default function Overview() {
                 <span className="metric-label">Top Pain Point</span>
                 <span className="badge badge-high">High Impact</span>
               </div>
-              <span className="metric-value" style={{ fontSize: "20px", marginTop: "4px" }}>{topPainPoint}</span>
+              <span className="metric-value" style={{ fontSize: "18px", marginTop: "4px" }}>{topPainPoint}</span>
               <span className="metric-sub">Smart Shuffle loops priority</span>
             </div>
 
