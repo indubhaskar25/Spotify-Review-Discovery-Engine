@@ -62,7 +62,11 @@ class RawStore:
         df = pd.read_parquet(parquet_path)
         records: list[ReviewRecord] = []
         for row in df.to_dict(orient="records"):
-            records.append(ReviewRecord.model_validate(row))
+            # Clean NaN/NA values to None so Pydantic doesn't throw validation errors
+            cleaned_row = {
+                k: (None if pd.isna(v) else v) for k, v in row.items()
+            }
+            records.append(ReviewRecord.model_validate(cleaned_row))
         
         del df
         import gc
