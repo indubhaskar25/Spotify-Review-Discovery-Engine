@@ -66,7 +66,7 @@ export default function App({ Component, pageProps }: AppProps) {
             </span>
             <div>
               <span className="logo-text" style={{ fontSize: "16px", display: "block" }}>
-                Spotify Review AI
+                Spotify Compass
               </span>
               <span
                 style={{
@@ -79,7 +79,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   marginTop: "2px",
                 }}
               >
-                Product Analytics
+                AI Discovery Companion
               </span>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function App({ Component, pageProps }: AppProps) {
           </nav>
 
           <div className="sidebar-footer">
-            <span className="model-badge">AI Feedback Intelligence</span>
+            <span className="model-badge">Spotify Compass</span>
 
             {/* Theme Toggle */}
             <button

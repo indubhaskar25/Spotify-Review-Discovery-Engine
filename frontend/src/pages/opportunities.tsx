@@ -56,8 +56,8 @@ interface OppData {
 const FALLBACK_OPPORTUNITIES: OppData[] = [
   {
     rank: 1,
-    title: "AI Discovery Assistant",
-    executiveInsight: "Users consistently report recommendation fatigue caused by collaborative filtering reinforcing historical listening patterns. The algorithm excels at serving familiarity but fails at curiosity. An AI intent-aware discovery assistant can diversify recommendations while preserving taste — understanding the difference between 'play something like my library' and 'surprise me with something completely new'.",
+    title: "Spotify Compass",
+    executiveInsight: "Users consistently report recommendation fatigue caused by collaborative filtering reinforcing historical listening patterns. The algorithm excels at serving familiarity but fails at curiosity. Spotify Compass can diversify recommendations while preserving taste — understanding the difference between 'play something like my library' and 'surprise me with something completely new'.",
     // Calibrated inputs → Score = 0.35×90 + 0.25×92 + 0.20×90 + 0.20×92 = 90.9 → 91 (Critical)
     mentionFrequency: 90,
     negSentiment: 92,
@@ -70,7 +70,7 @@ const FALLBACK_OPPORTUNITIES: OppData[] = [
       "Increase discovery engagement among active explorers",
       "Increase listening diversity and long-tail artist consumption",
     ],
-    pmRecommendation: "Build an AI Discovery Assistant that accepts natural language prompts such as 'calm indie music for a rainy evening' or 'obscure 90s jazz for late-night coding'. The assistant uses semantic similarity, mood embeddings, and listening history to generate real-time personalised playlists — going far beyond keyword search or collaborative filtering.",
+    pmRecommendation: "Build Spotify Compass, an AI Discovery Companion that accepts natural language prompts such as 'calm indie music for a rainy evening' or 'obscure 90s jazz for late-night coding'. The companion uses semantic similarity, mood embeddings, and listening history to generate real-time personalised playlists — going far beyond keyword search or collaborative filtering.",
     quote: "I wish I could type a vibe like 'chill late-night indie for studying' and get a perfect playlist — Spotify's search is completely useless for that.",
     evidence: { reddit: 322, play: 194, appStore: 147, forum: 91 },
     kpis: ["↑ New Artist Discovery Rate", "↑ Session Diversity Score", "↓ Repeat Recommendation Rate", "↑ Discovery Completion Rate"],
@@ -562,8 +562,8 @@ export default function ProductOpportunities() {
   return (
     <>
       <Head>
-        <title>AI Product Opportunities — Spotify Review Insights</title>
-        <meta name="description" content="AI-generated strategic product opportunities derived from user review analysis across App Store, Play Store, Reddit, and Spotify Community." />
+        <title>Spotify Compass — AI Discovery Companion</title>
+        <meta name="description" content="An AI-powered music discovery companion that helps listeners break out of repetitive listening patterns and discover new music through context, intent, and exploration control." />
       </Head>
 
       {/* Page header */}
@@ -571,7 +571,7 @@ export default function ProductOpportunities() {
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
           <Bot size={20} style={{ color: "var(--green)" }} />
           <span style={{ fontSize: "11px", color: "var(--green)", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            AI-Derived · Review Intelligence
+            AI-Derived · Spotify Compass
           </span>
         </div>
         <h1 className="page-title" style={{ marginBottom: "8px" }}>

@@ -4,7 +4,7 @@ export default function Pipeline() {
   return (
     <>
       <Head>
-        <title>Data Pipeline — Spotify Review Discovery Engine</title>
+        <title>Spotify Compass — AI Discovery Companion</title>
       </Head>
 
       <div className="page-header">

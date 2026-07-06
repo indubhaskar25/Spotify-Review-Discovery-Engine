@@ -69,7 +69,7 @@ export default function UserSegments() {
   return (
     <>
       <Head>
-        <title>User Segments — Spotify Review Insights</title>
+        <title>Spotify Compass — AI Discovery Companion</title>
       </Head>
 
       <div className="page-header">

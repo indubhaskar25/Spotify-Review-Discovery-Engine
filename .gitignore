@@ -49,3 +49,5 @@ data/insights/
 *.egg-info/
 dist/
 build/
+.vercel
+.env*
