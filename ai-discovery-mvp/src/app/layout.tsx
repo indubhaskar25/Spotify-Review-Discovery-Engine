@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Discovery Assistant — Spotify Review Intelligence",
-  description: "Conversational AI Discovery Assistant powered by real user feedback, featuring an Adventurousness Slider and Contextual Mood Filtering.",
+  title: "Spotify Compass — AI Discovery Companion",
+  description: "An AI-powered music discovery companion that helps listeners break out of repetitive listening patterns and discover new music through context, intent, and exploration control.",
 };
 
 export default function RootLayout({
