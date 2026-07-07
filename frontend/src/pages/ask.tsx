@@ -191,13 +191,13 @@ export default function AskAI() {
   return (
     <>
       <Head>
-        <title>Spotify Compass — AI Discovery Companion</title>
+        <title>Ask AI Assistant — Spotify Review Insights</title>
       </Head>
 
       <div className="page-header">
-        <h1 className="page-title">Spotify Compass</h1>
+        <h1 className="page-title">Ask AI Feedback Assistant</h1>
         <p className="page-subtitle">
-          An AI-powered music discovery companion that helps listeners break out of repetitive listening patterns and discover new music through context, intent, and exploration control.
+          AI-powered review intelligence research assistant to query and drill down on Spotify music discovery problems.
         </p>
       </div>
 

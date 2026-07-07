@@ -233,7 +233,7 @@ export default function PainPoints() {
   return (
     <>
       <Head>
-        <title>Spotify Compass — AI Discovery Companion</title>
+        <title>Top Pain Points — Spotify Review Insights</title>
       </Head>
 
       <div className="page-header">

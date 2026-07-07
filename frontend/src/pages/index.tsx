@@ -192,16 +192,16 @@ export default function Overview() {
   return (
     <>
       <Head>
-        <title>Spotify Compass — AI Discovery Companion</title>
-        <meta name="description" content="An AI-powered music discovery companion that helps listeners break out of repetitive listening patterns and discover new music through context, intent, and exploration control." />
+        <title>Spotify Review AI — Dashboard Overview</title>
+        <meta name="description" content="AI-powered review intelligence for understanding music discovery problems." />
       </Head>
 
       {/* Top Header Filter Row (No dataset select) */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", flexWrap: "wrap", gap: "16px" }}>
         <div>
-          <h1 className="page-title" style={{ fontSize: "28px", fontWeight: 800 }}>Spotify Compass</h1>
+          <h1 className="page-title" style={{ fontSize: "28px", fontWeight: 800 }}>Spotify Review AI</h1>
           <p className="page-subtitle" style={{ fontSize: "14px" }}>
-            An AI-powered music discovery companion that helps listeners break out of repetitive listening patterns and discover new music through context, intent, and exploration control.
+            AI-powered review intelligence for understanding music discovery problems and product opportunities.
           </p>
         </div>
 
@@ -364,8 +364,8 @@ export default function Overview() {
               <ul className="exec-summary-bullets">
                 <li><strong>68%</strong> report repetitive recommendations and smart shuffle loops.</li>
                 <li><strong>64%</strong> discover new artists outside Spotify (e.g. Instagram, TikTok, Bandcamp).</li>
-                <li><strong>76%</strong> would adopt Spotify Compass.</li>
-                <li>The strongest opportunity is a companion that understands mood, listening intent, and exploration goals.</li>
+                <li><strong>76%</strong> would adopt an AI-powered discovery assistant.</li>
+                <li>The strongest opportunity is an AI assistant that understands mood, listening intent, and exploration goals.</li>
               </ul>
             </div>
 

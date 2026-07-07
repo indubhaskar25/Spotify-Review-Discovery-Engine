@@ -110,11 +110,11 @@ export default function SemanticSearch() {
   return (
     <>
       <Head>
-        <title>Spotify Compass — AI Discovery Companion</title>
+        <title>Semantic Search — Spotify Review Discovery Engine</title>
       </Head>
 
       <div className="page-header">
-        <h1 className="page-title">Spotify Compass</h1>
+        <h1 className="page-title">AI Review Explorer</h1>
         <p className="page-subtitle">
           Query the ChromaDB vector store directly using dense embeddings to retrieve contextually similar reviews.
         </p>
