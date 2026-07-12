@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: spotify-review-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: GROQ_API_KEY
+        sync: false # Required for AI endpoints (Ask AI, live insight generation).
+                    # Without it, the backend starts normally and serves cached/mock data.
